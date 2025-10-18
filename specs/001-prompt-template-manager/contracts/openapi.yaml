@@ -1,0 +1,726 @@
+openapi: 3.0.3
+info:
+  title: Prompt Template Manager API
+  description: |
+    REST API for managing markdown-based prompt templates with folder organization
+    and placeholder substitution for Devin LLM integration.
+  version: 1.0.0
+  contact:
+    name: Prompt Template Manager
+servers:
+  - url: http://localhost:5000/api
+    description: Local development server
+
+tags:
+  - name: Templates
+    description: Template CRUD operations
+  - name: Folders
+    description: Folder organization and management
+  - name: Placeholders
+    description: Placeholder parsing and prompt generation
+  - name: Search
+    description: Template search and discovery
+
+paths:
+  /templates:
+    get:
+      tags: [Templates]
+      summary: List templates
+      description: Get paginated list of templates, optionally filtered by folder
+      operationId: listTemplates
+      parameters:
+        - name: folderId
+          in: query
+          description: Filter templates by folder (null = root level)
+          required: false
+          schema:
+            type: string
+            format: uuid
+            nullable: true
+        - name: page
+          in: query
+          description: Page number (1-based)
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 200
+      responses:
+        '200':
+          description: List of templates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+    post:
+      tags: [Templates]
+      summary: Create template
+      description: Create a new prompt template
+      operationId: createTemplate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTemplateRequest'
+      responses:
+        '201':
+          description: Template created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /templates/{id}:
+    get:
+      tags: [Templates]
+      summary: Get template by ID
+      description: Retrieve a single template with full content
+      operationId: getTemplate
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      responses:
+        '200':
+          description: Template details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Templates]
+      summary: Update template
+      description: Update template name, content, or folder location
+      operationId: updateTemplate
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTemplateRequest'
+      responses:
+        '200':
+          description: Template updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+    delete:
+      tags: [Templates]
+      summary: Delete template
+      description: Permanently delete a template
+      operationId: deleteTemplate
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      responses:
+        '204':
+          description: Template deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /templates/{id}/placeholders:
+    get:
+      tags: [Placeholders]
+      summary: Extract placeholders from template
+      description: Parse template content and return list of placeholders
+      operationId: getTemplatePlaceholders
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      responses:
+        '200':
+          description: List of placeholders found in template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceholderListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /templates/{id}/generate:
+    post:
+      tags: [Placeholders]
+      summary: Generate prompt from template
+      description: Substitute placeholder values and generate final prompt
+      operationId: generatePrompt
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneratePromptRequest'
+      responses:
+        '200':
+          description: Generated prompt with substituted values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromptInstanceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /templates/{id}/send:
+    post:
+      tags: [Placeholders]
+      summary: Send prompt to Devin LLM
+      description: Generate prompt and send to Devin LLM
+      operationId: sendPromptToDevin
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneratePromptRequest'
+      responses:
+        '200':
+          description: Prompt sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendPromptResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /folders:
+    get:
+      tags: [Folders]
+      summary: Get folder tree
+      description: Retrieve complete folder hierarchy
+      operationId: getFolderTree
+      responses:
+        '200':
+          description: Hierarchical folder tree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderTreeResponse'
+
+    post:
+      tags: [Folders]
+      summary: Create folder
+      description: Create a new folder
+      operationId: createFolder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFolderRequest'
+      responses:
+        '201':
+          description: Folder created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /folders/{id}:
+    get:
+      tags: [Folders]
+      summary: Get folder by ID
+      description: Retrieve folder details with child folders and templates
+      operationId: getFolder
+      parameters:
+        - $ref: '#/components/parameters/FolderId'
+      responses:
+        '200':
+          description: Folder details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderDetailsResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Folders]
+      summary: Update folder
+      description: Update folder name or move to different parent
+      operationId: updateFolder
+      parameters:
+        - $ref: '#/components/parameters/FolderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFolderRequest'
+      responses:
+        '200':
+          description: Folder updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+    delete:
+      tags: [Folders]
+      summary: Delete folder
+      description: Delete folder (only if empty - no child folders or templates)
+      operationId: deleteFolder
+      parameters:
+        - $ref: '#/components/parameters/FolderId'
+      responses:
+        '204':
+          description: Folder deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /search:
+    get:
+      tags: [Search]
+      summary: Search templates
+      description: Full-text search across template names and content
+      operationId: searchTemplates
+      parameters:
+        - name: query
+          in: query
+          description: Search query string
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - name: page
+          in: query
+          description: Page number (1-based)
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 200
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+components:
+  parameters:
+    TemplateId:
+      name: id
+      in: path
+      description: Template unique identifier
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    FolderId:
+      name: id
+      in: path
+      description: Folder unique identifier
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    # Templates
+    TemplateResponse:
+      type: object
+      required: [id, name, content, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 200
+        content:
+          type: string
+          description: Markdown content with optional placeholders
+        folderId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Parent folder ID (null = root level)
+        folderName:
+          type: string
+          nullable: true
+          description: Parent folder name for display
+        createdAt:
+          type: string
+          format: date-time
+          description: ISO 8601 UTC timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: ISO 8601 UTC timestamp
+
+    TemplateListResponse:
+      type: object
+      required: [items, totalCount, page, pageSize]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateSummary'
+        totalCount:
+          type: integer
+          description: Total number of templates matching filter
+        page:
+          type: integer
+          description: Current page number
+        pageSize:
+          type: integer
+          description: Items per page
+        hasMore:
+          type: boolean
+          description: Whether more pages exist
+
+    TemplateSummary:
+      type: object
+      required: [id, name, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        folderId:
+          type: string
+          format: uuid
+          nullable: true
+        folderName:
+          type: string
+          nullable: true
+        contentPreview:
+          type: string
+          description: First 200 characters of content
+          maxLength: 200
+        placeholderCount:
+          type: integer
+          description: Number of placeholders in template
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateTemplateRequest:
+      type: object
+      required: [name, content]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        content:
+          type: string
+          description: Markdown content
+        folderId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Parent folder ID (null = root level)
+
+    UpdateTemplateRequest:
+      type: object
+      required: [name, content]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        content:
+          type: string
+        folderId:
+          type: string
+          format: uuid
+          nullable: true
+
+    # Placeholders
+    PlaceholderListResponse:
+      type: object
+      required: [placeholders]
+      properties:
+        placeholders:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlaceholderInfo'
+
+    PlaceholderInfo:
+      type: object
+      required: [name, displayName]
+      properties:
+        name:
+          type: string
+          description: Placeholder variable name (without {{}})
+          example: "feature_name"
+        displayName:
+          type: string
+          description: Human-readable name
+          example: "Feature Name"
+        defaultValue:
+          type: string
+          nullable: true
+          description: Optional default value (future enhancement)
+
+    GeneratePromptRequest:
+      type: object
+      required: [placeholderValues]
+      properties:
+        placeholderValues:
+          type: object
+          additionalProperties:
+            type: string
+          description: Key-value pairs for placeholder substitution
+          example:
+            feature_name: "User Authentication"
+            priority: "High"
+
+    PromptInstanceResponse:
+      type: object
+      required: [templateId, templateName, finalContent, placeholderValues, generatedAt]
+      properties:
+        templateId:
+          type: string
+          format: uuid
+        templateName:
+          type: string
+        finalContent:
+          type: string
+          description: Markdown with placeholders replaced
+        placeholderValues:
+          type: object
+          additionalProperties:
+            type: string
+        generatedAt:
+          type: string
+          format: date-time
+
+    SendPromptResponse:
+      type: object
+      required: [success, message]
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          description: Status message
+          example: "Prompt sent to Devin successfully"
+        devinResponseId:
+          type: string
+          nullable: true
+          description: Devin LLM response identifier (if available)
+
+    # Folders
+    FolderResponse:
+      type: object
+      required: [id, name, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 100
+        parentFolderId:
+          type: string
+          format: uuid
+          nullable: true
+        parentFolderName:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    FolderTreeResponse:
+      type: object
+      required: [rootFolders]
+      properties:
+        rootFolders:
+          type: array
+          items:
+            $ref: '#/components/schemas/FolderTreeNode'
+
+    FolderTreeNode:
+      type: object
+      required: [id, name, depth, templateCount, childFolders]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        depth:
+          type: integer
+          description: Nesting level (0 = root)
+        templateCount:
+          type: integer
+          description: Number of templates directly in this folder
+        childFolders:
+          type: array
+          items:
+            $ref: '#/components/schemas/FolderTreeNode'
+          description: Nested child folders
+
+    FolderDetailsResponse:
+      type: object
+      required: [folder, templates, childFolders]
+      properties:
+        folder:
+          $ref: '#/components/schemas/FolderResponse'
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateSummary'
+        childFolders:
+          type: array
+          items:
+            $ref: '#/components/schemas/FolderResponse'
+
+    CreateFolderRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        parentFolderId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Parent folder ID (null = root level)
+
+    UpdateFolderRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        parentFolderId:
+          type: string
+          format: uuid
+          nullable: true
+
+    # Error Responses
+    ErrorResponse:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          description: Error type/category
+          example: "ValidationError"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Template name is required"
+        details:
+          type: array
+          items:
+            type: string
+          description: Additional error details (validation errors, etc.)
+
+  responses:
+    BadRequest:
+      description: Invalid request (validation errors, bad input)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "ValidationError"
+            message: "Validation failed"
+            details:
+              - "Template name must be between 1 and 200 characters"
+              - "Folder ID must be a valid UUID"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "NotFound"
+            message: "Template not found"
+            details: []
+
+    Conflict:
+      description: Conflict (duplicate name, circular reference, etc.)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "Conflict"
+            message: "Template name already exists in this folder"
+            details: []
+
+    BadGateway:
+      description: External service error (Devin LLM unreachable)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "ExternalServiceError"
+            message: "Failed to send prompt to Devin LLM"
+            details: ["Connection timeout after 30 seconds"]

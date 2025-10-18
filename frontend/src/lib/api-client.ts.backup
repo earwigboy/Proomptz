@@ -1,0 +1,151 @@
+import axios from 'axios';
+
+const API_BASE_URL = 'http://localhost:5026/api';
+
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+export interface Template {
+  id: string;
+  name: string;
+  content: string;
+  folderId: string | null;
+  folderName: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TemplateSummary {
+  id: string;
+  name: string;
+  folderId: string | null;
+  folderName: string | null;
+  contentPreview: string;
+  placeholderCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TemplateListResponse {
+  items: TemplateSummary[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+}
+
+export interface CreateTemplateRequest {
+  name: string;
+  content: string;
+  folderId: string | null;
+}
+
+export interface UpdateTemplateRequest {
+  name: string;
+  content: string;
+  folderId: string | null;
+}
+
+export interface Folder {
+  id: string;
+  name: string;
+  parentFolderId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FolderTreeNode {
+  id: string;
+  name: string;
+  depth: number;
+  templateCount: number;
+  childFolders: FolderTreeNode[];
+}
+
+export interface FolderTreeResponse {
+  rootFolders: FolderTreeNode[];
+}
+
+export interface FolderDetailsResponse {
+  id: string;
+  name: string;
+  parentFolderId: string | null;
+  parentFolderName: string | null;
+  templateCount: number;
+  subfolderCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateFolderRequest {
+  name: string;
+  parentFolderId: string | null;
+}
+
+export interface UpdateFolderRequest {
+  name: string;
+  parentFolderId: string | null;
+}
+
+export const templatesApi = {
+  getAll: async (params?: { folderId?: string; page?: number; pageSize?: number }) => {
+    const response = await apiClient.get<TemplateListResponse>('/templates', { params });
+    return response.data;
+  },
+
+  getById: async (id: string) => {
+    const response = await apiClient.get<Template>(`/templates/${id}`);
+    return response.data;
+  },
+
+  create: async (data: CreateTemplateRequest) => {
+    const response = await apiClient.post<Template>('/templates', data);
+    return response.data;
+  },
+
+  update: async (id: string, data: UpdateTemplateRequest) => {
+    const response = await apiClient.put<Template>(`/templates/${id}`, data);
+    return response.data;
+  },
+
+  delete: async (id: string) => {
+    await apiClient.delete(`/templates/${id}`);
+  },
+};
+
+export const foldersApi = {
+  getTree: async () => {
+    const response = await apiClient.get<FolderTreeResponse>('/folders/tree');
+    return response.data;
+  },
+
+  getById: async (id: string) => {
+    const response = await apiClient.get<FolderDetailsResponse>(`/folders/${id}`);
+    return response.data;
+  },
+
+  getChildren: async (parentId?: string) => {
+    const response = await apiClient.get<Folder[]>('/folders', { params: { parentId } });
+    return response.data;
+  },
+
+  create: async (data: CreateFolderRequest) => {
+    const response = await apiClient.post<Folder>('/folders', data);
+    return response.data;
+  },
+
+  update: async (id: string, data: UpdateFolderRequest) => {
+    const response = await apiClient.put<Folder>(`/folders/${id}`, data);
+    return response.data;
+  },
+
+  delete: async (id: string) => {
+    await apiClient.delete(`/folders/${id}`);
+  },
+};
+
+export default apiClient;
