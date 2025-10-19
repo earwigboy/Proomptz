@@ -9,4 +9,5 @@ public interface ITemplateService
     Task<Template> CreateAsync(string name, string content, Guid? folderId, CancellationToken cancellationToken = default);
     Task<Template> UpdateAsync(Guid id, string name, string content, Guid? folderId, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<(IEnumerable<Template> Items, int TotalCount)> SearchTemplatesAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default);
 }

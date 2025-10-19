@@ -112,4 +112,52 @@ public class TemplateRepository : ITemplateRepository
 
         return await query.AnyAsync(cancellationToken);
     }
+
+    public async Task<IEnumerable<Template>> SearchTemplatesAsync(
+        string query,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        // Use FTS5 MATCH query for full-text search
+        var sql = @"
+            SELECT t.*
+            FROM Templates t
+            INNER JOIN TemplatesFts fts ON t.Id = fts.Id
+            WHERE TemplatesFts MATCH {0}
+            ORDER BY rank
+            LIMIT {1} OFFSET {2}";
+
+        var offset = (page - 1) * pageSize;
+        var results = await _context.Templates
+            .FromSqlRaw(sql, query, pageSize, offset)
+            .Include(t => t.Folder)
+            .ToListAsync(cancellationToken);
+
+        return results;
+    }
+
+    public async Task<int> GetSearchCountAsync(
+        string query,
+        CancellationToken cancellationToken = default)
+    {
+        var sql = @"
+            SELECT COUNT(*)
+            FROM Templates t
+            INNER JOIN TemplatesFts fts ON t.Id = fts.Id
+            WHERE TemplatesFts MATCH {0}";
+
+        var connection = _context.Database.GetDbConnection();
+        await connection.OpenAsync(cancellationToken);
+
+        using var command = connection.CreateCommand();
+        command.CommandText = sql.Replace("{0}", "@query");
+        var parameter = command.CreateParameter();
+        parameter.ParameterName = "@query";
+        parameter.Value = query;
+        command.Parameters.Add(parameter);
+
+        var result = await command.ExecuteScalarAsync(cancellationToken);
+        return Convert.ToInt32(result);
+    }
 }

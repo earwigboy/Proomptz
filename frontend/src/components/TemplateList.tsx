@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { templatesApi } from '../lib/api-client';
 import type { Template } from '../lib/api-client';
 
@@ -10,6 +12,8 @@ interface TemplateListProps {
 
 export default function TemplateList({ onEdit, onCreate, selectedFolderId }: TemplateListProps) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [loadingTemplateId, setLoadingTemplateId] = useState<string | null>(null);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['templates', selectedFolderId],
@@ -59,9 +63,18 @@ export default function TemplateList({ onEdit, onCreate, selectedFolderId }: Tem
     <div className="template-list">
       <div className="list-header">
         <h2>Templates</h2>
-        <button onClick={onCreate} className="btn-create">
-          Create New Template
-        </button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button
+            onClick={() => navigate('/search')}
+            className="btn-edit"
+            style={{ padding: '0.5rem 1rem' }}
+          >
+            🔍 Search
+          </button>
+          <button onClick={onCreate} className="btn-create">
+            Create New Template
+          </button>
+        </div>
       </div>
 
       {templates.length === 0 ? (
@@ -106,13 +119,28 @@ export default function TemplateList({ onEdit, onCreate, selectedFolderId }: Tem
                 </div>
                 <div className="template-actions">
                   <button
+                    onClick={() => navigate(`/use/${template.id}`)}
+                    className="btn-create"
+                    style={{ fontSize: '0.875rem', padding: '0.375rem 0.75rem' }}
+                  >
+                    Use
+                  </button>
+                  <button
                     onClick={async () => {
-                      const fullTemplate = await templatesApi.getById(template.id);
-                      onEdit(fullTemplate);
+                      setLoadingTemplateId(template.id);
+                      try {
+                        const fullTemplate = await templatesApi.getById(template.id);
+                        onEdit(fullTemplate);
+                      } catch (err) {
+                        alert('Failed to load template');
+                      } finally {
+                        setLoadingTemplateId(null);
+                      }
                     }}
                     className="btn-edit"
+                    disabled={loadingTemplateId === template.id}
                   >
-                    Edit
+                    {loadingTemplateId === template.id ? 'Loading...' : 'Edit'}
                   </button>
                   <button
                     onClick={() => handleDelete(template.id, template.name)}

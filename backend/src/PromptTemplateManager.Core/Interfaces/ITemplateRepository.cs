@@ -11,4 +11,6 @@ public interface ITemplateRepository
     Task<Template> UpdateAsync(Template template, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     Task<bool> ExistsWithNameInFolderAsync(string name, Guid? folderId, Guid? excludeId = null, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Template>> SearchTemplatesAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default);
+    Task<int> GetSearchCountAsync(string query, CancellationToken cancellationToken = default);
 }

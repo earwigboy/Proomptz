@@ -37,3 +37,17 @@ npm-debug.log*
 # Test & coverage
 coverage/
 *.coverage
+
+# SQLite databases
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Specify workflow
+.specify/

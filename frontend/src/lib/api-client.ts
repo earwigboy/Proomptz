@@ -73,11 +73,11 @@ export const foldersApi = {
   },
 
   getById: async (id: string) => {
-    return FoldersService.getApiFolders1({ id });
+    return FoldersService.getApiFolders({ id });
   },
 
   getChildren: async (parentId?: string) => {
-    return FoldersService.getApiFolders({ parentId });
+    return FoldersService.getApiFolders1({ parentId });
   },
 
   create: async (data: import('./api/models/CreateFolderRequest').CreateFolderRequest) => {

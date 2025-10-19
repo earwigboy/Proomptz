@@ -3,6 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CreateTemplateRequest } from '../models/CreateTemplateRequest';
+import type { GeneratePromptRequest } from '../models/GeneratePromptRequest';
+import type { PlaceholderListResponse } from '../models/PlaceholderListResponse';
+import type { PromptInstanceResponse } from '../models/PromptInstanceResponse';
+import type { SendPromptResponse } from '../models/SendPromptResponse';
 import type { TemplateListResponse } from '../models/TemplateListResponse';
 import type { TemplateResponse } from '../models/TemplateResponse';
 import type { UpdateTemplateRequest } from '../models/UpdateTemplateRequest';
@@ -102,6 +106,65 @@ export class TemplatesService {
             path: {
                 'id': id,
             },
+        });
+    }
+    /**
+     * @returns PlaceholderListResponse OK
+     * @throws ApiError
+     */
+    public static getApiTemplatesPlaceholders({
+        id,
+    }: {
+        id: string,
+    }): CancelablePromise<PlaceholderListResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/Templates/{id}/placeholders',
+            path: {
+                'id': id,
+            },
+        });
+    }
+    /**
+     * @returns PromptInstanceResponse OK
+     * @throws ApiError
+     */
+    public static postApiTemplatesGenerate({
+        id,
+        requestBody,
+    }: {
+        id: string,
+        requestBody?: GeneratePromptRequest,
+    }): CancelablePromise<PromptInstanceResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/Templates/{id}/generate',
+            path: {
+                'id': id,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
+     * @returns SendPromptResponse OK
+     * @throws ApiError
+     */
+    public static postApiTemplatesSend({
+        id,
+        requestBody,
+    }: {
+        id: string,
+        requestBody?: GeneratePromptRequest,
+    }): CancelablePromise<SendPromptResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/Templates/{id}/send',
+            path: {
+                'id': id,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
         });
     }
 }

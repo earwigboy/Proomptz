@@ -91,4 +91,21 @@ public class TemplateService : ITemplateService
 
         await _templateRepository.DeleteAsync(id, cancellationToken);
     }
+
+    public async Task<(IEnumerable<Template> Items, int TotalCount)> SearchTemplatesAsync(
+        string query,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return (Enumerable.Empty<Template>(), 0);
+        }
+
+        var items = await _templateRepository.SearchTemplatesAsync(query, page, pageSize, cancellationToken);
+        var totalCount = await _templateRepository.GetSearchCountAsync(query, cancellationToken);
+
+        return (items, totalCount);
+    }
 }

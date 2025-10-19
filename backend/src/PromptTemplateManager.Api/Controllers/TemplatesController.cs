@@ -11,15 +11,21 @@ namespace PromptTemplateManager.Api.Controllers;
 public class TemplatesController : ControllerBase
 {
     private readonly ITemplateService _templateService;
+    private readonly IPlaceholderService _placeholderService;
+    private readonly IDevinClient _devinClient;
     private readonly IValidator<CreateTemplateRequest> _createValidator;
     private readonly IValidator<UpdateTemplateRequest> _updateValidator;
 
     public TemplatesController(
         ITemplateService templateService,
+        IPlaceholderService placeholderService,
+        IDevinClient devinClient,
         IValidator<CreateTemplateRequest> createValidator,
         IValidator<UpdateTemplateRequest> updateValidator)
     {
         _templateService = templateService;
+        _placeholderService = placeholderService;
+        _devinClient = devinClient;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
     }
@@ -158,6 +164,101 @@ public class TemplatesController : ControllerBase
     {
         await _templateService.DeleteAsync(id, cancellationToken);
         return NoContent();
+    }
+
+    [HttpGet("{id}/placeholders")]
+    public async Task<ActionResult<PlaceholderListResponse>> GetPlaceholders(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var template = await _templateService.GetByIdAsync(id, cancellationToken);
+        if (template == null)
+            return NotFound(new { message = $"Template with ID {id} not found" });
+
+        var placeholderNames = _placeholderService.ExtractPlaceholderNames(template.Content ?? string.Empty);
+
+        var response = new PlaceholderListResponse
+        {
+            TemplateId = template.Id.ToString(),
+            TemplateName = template.Name,
+            Placeholders = placeholderNames.Select(name => new PlaceholderInfo
+            {
+                Name = name,
+                Description = null
+            }).ToList()
+        };
+
+        return Ok(response);
+    }
+
+    [HttpPost("{id}/generate")]
+    public async Task<ActionResult<PromptInstanceResponse>> GeneratePrompt(
+        Guid id,
+        [FromBody] GeneratePromptRequest request,
+        CancellationToken cancellationToken)
+    {
+        var template = await _templateService.GetByIdAsync(id, cancellationToken);
+        if (template == null)
+            return NotFound(new { message = $"Template with ID {id} not found" });
+
+        var requiredPlaceholders = _placeholderService.ExtractPlaceholderNames(template.Content ?? string.Empty);
+
+        if (!_placeholderService.ValidatePlaceholderValues(requiredPlaceholders, request.PlaceholderValues))
+        {
+            return BadRequest(new
+            {
+                error = "ValidationError",
+                message = "All placeholders must have values",
+                requiredPlaceholders
+            });
+        }
+
+        var generatedPrompt = _placeholderService.GeneratePrompt(template.Content ?? string.Empty, request.PlaceholderValues);
+
+        var response = new PromptInstanceResponse
+        {
+            TemplateId = template.Id.ToString(),
+            TemplateName = template.Name,
+            GeneratedPrompt = generatedPrompt,
+            PlaceholderValues = request.PlaceholderValues
+        };
+
+        return Ok(response);
+    }
+
+    [HttpPost("{id}/send")]
+    public async Task<ActionResult<SendPromptResponse>> SendPrompt(
+        Guid id,
+        [FromBody] GeneratePromptRequest request,
+        CancellationToken cancellationToken)
+    {
+        var template = await _templateService.GetByIdAsync(id, cancellationToken);
+        if (template == null)
+            return NotFound(new { message = $"Template with ID {id} not found" });
+
+        var requiredPlaceholders = _placeholderService.ExtractPlaceholderNames(template.Content ?? string.Empty);
+
+        if (!_placeholderService.ValidatePlaceholderValues(requiredPlaceholders, request.PlaceholderValues))
+        {
+            return BadRequest(new
+            {
+                error = "ValidationError",
+                message = "All placeholders must have values",
+                requiredPlaceholders
+            });
+        }
+
+        var generatedPrompt = _placeholderService.GeneratePrompt(template.Content ?? string.Empty, request.PlaceholderValues);
+        var (success, message, responseId) = await _devinClient.SendPromptAsync(generatedPrompt, cancellationToken);
+
+        var response = new SendPromptResponse
+        {
+            Success = success,
+            Message = message,
+            DevinResponseId = responseId
+        };
+
+        return Ok(response);
     }
 
     private static int CountPlaceholders(string content)

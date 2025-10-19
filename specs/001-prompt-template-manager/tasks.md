@@ -23,18 +23,18 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create solution file and .NET project structure per plan.md at backend/
-- [ ] T002 [P] Initialize backend PromptTemplateManager.Api project with ASP.NET Core 8.0 in backend/src/PromptTemplateManager.Api/
-- [ ] T003 [P] Initialize backend PromptTemplateManager.Core class library in backend/src/PromptTemplateManager.Core/
-- [ ] T004 [P] Initialize backend PromptTemplateManager.Application class library in backend/src/PromptTemplateManager.Application/
-- [ ] T005 [P] Initialize backend PromptTemplateManager.Infrastructure class library in backend/src/PromptTemplateManager.Infrastructure/
-- [ ] T006 [P] Initialize Vite + React + TypeScript project in frontend/
-- [ ] T007 [P] Install backend NuGet packages (EF Core, Swashbuckle, FluentValidation, SQLite) in respective projects
-- [ ] T008 [P] Install frontend npm packages (React 18, Vite, shadcn/ui, Tailwind, openapi-typescript-codegen) in frontend/package.json
-- [ ] T009 [P] Configure Tailwind CSS in frontend/tailwind.config.js and frontend/src/index.css
-- [ ] T010 [P] Configure ESLint and Prettier in frontend/.eslintrc.js and frontend/.prettierrc
-- [ ] T011 [P] Configure StyleCop and dotnet format in backend/.editorconfig
-- [ ] T012 Create shared/openapi/ directory for OpenAPI spec output
+- [X] T001 Create solution file and .NET project structure per plan.md at backend/
+- [X] T002 [P] Initialize backend PromptTemplateManager.Api project with ASP.NET Core 8.0 in backend/src/PromptTemplateManager.Api/
+- [X] T003 [P] Initialize backend PromptTemplateManager.Core class library in backend/src/PromptTemplateManager.Core/
+- [X] T004 [P] Initialize backend PromptTemplateManager.Application class library in backend/src/PromptTemplateManager.Application/
+- [X] T005 [P] Initialize backend PromptTemplateManager.Infrastructure class library in backend/src/PromptTemplateManager.Infrastructure/
+- [X] T006 [P] Initialize Vite + React + TypeScript project in frontend/
+- [X] T007 [P] Install backend NuGet packages (EF Core, Swashbuckle, FluentValidation, SQLite) in respective projects
+- [X] T008 [P] Install frontend npm packages (React 18, Vite, shadcn/ui, Tailwind, openapi-typescript-codegen) in frontend/package.json
+- [X] T009 [P] Configure Tailwind CSS in frontend/tailwind.config.js and frontend/src/index.css
+- [X] T010 [P] Configure ESLint and Prettier in frontend/.eslintrc.js and frontend/.prettierrc
+- [X] T011 [P] Configure StyleCop and dotnet format in backend/.editorconfig
+- [X] T012 Create shared/openapi/ directory for OpenAPI spec output
 
 ---
 
@@ -44,21 +44,21 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T013 Configure dependency injection in backend/src/PromptTemplateManager.Api/Program.cs
-- [ ] T014 [P] Create ApplicationDbContext in backend/src/PromptTemplateManager.Infrastructure/Data/ApplicationDbContext.cs
-- [ ] T015 [P] Configure SQLite connection and EF Core in backend/src/PromptTemplateManager.Api/appsettings.json
-- [ ] T016 [P] Create global error handling middleware in backend/src/PromptTemplateManager.Api/Middleware/ErrorHandlingMiddleware.cs
-- [ ] T017 [P] Create base DomainException in backend/src/PromptTemplateManager.Core/Exceptions/DomainException.cs
-- [ ] T018 [P] Create ValidationException in backend/src/PromptTemplateManager.Core/Exceptions/ValidationException.cs
-- [ ] T019 [P] Create NotFoundException in backend/src/PromptTemplateManager.Core/Exceptions/NotFoundException.cs
-- [ ] T020 [P] Create ConflictException in backend/src/PromptTemplateManager.Core/Exceptions/ConflictException.cs
-- [ ] T021 Configure Swashbuckle OpenAPI generation in backend/src/PromptTemplateManager.Api/Program.cs
-- [ ] T022 [P] Configure CORS for frontend localhost:5173 in backend/src/PromptTemplateManager.Api/Program.cs
-- [ ] T023 [P] Setup React Router in frontend/src/App.tsx
-- [ ] T024 [P] Create React Error Boundary component in frontend/src/components/ErrorBoundary.tsx
-- [ ] T025 [P] Initialize shadcn/ui components (Button, Input, Dialog, Toast) in frontend/src/components/ui/
-- [ ] T026 Configure Vite OpenAPI codegen script in frontend/vite.config.ts
-- [ ] T027 Add build scripts to frontend/package.json for generate:api, type-check, build
+- [X] T013 Configure dependency injection in backend/src/PromptTemplateManager.Api/Program.cs
+- [X] T014 [P] Create ApplicationDbContext in backend/src/PromptTemplateManager.Infrastructure/Data/ApplicationDbContext.cs
+- [X] T015 [P] Configure SQLite connection and EF Core in backend/src/PromptTemplateManager.Api/appsettings.json
+- [X] T016 [P] Create global error handling middleware in backend/src/PromptTemplateManager.Api/Middleware/ErrorHandlingMiddleware.cs
+- [X] T017 [P] Create base DomainException in backend/src/PromptTemplateManager.Core/Exceptions/DomainException.cs
+- [X] T018 [P] Create ValidationException in backend/src/PromptTemplateManager.Core/Exceptions/ValidationException.cs
+- [X] T019 [P] Create NotFoundException in backend/src/PromptTemplateManager.Core/Exceptions/NotFoundException.cs
+- [X] T020 [P] Create ConflictException in backend/src/PromptTemplateManager.Core/Exceptions/ConflictException.cs
+- [X] T021 Configure Swashbuckle OpenAPI generation in backend/src/PromptTemplateManager.Api/Program.cs
+- [X] T022 [P] Configure CORS for frontend localhost:5173 in backend/src/PromptTemplateManager.Api/Program.cs
+- [X] T023 [P] Setup React Router in frontend/src/App.tsx
+- [X] T024 [P] Create React Error Boundary component in frontend/src/components/ErrorBoundary.tsx
+- [X] T025 [P] Initialize shadcn/ui components (Button, Input, Dialog, Toast) in frontend/src/components/ui/
+- [X] T026 Configure Vite OpenAPI codegen script in frontend/vite.config.ts
+- [X] T027 Add build scripts to frontend/package.json for generate:api, type-check, build
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -72,30 +72,30 @@
 
 ### Implementation for User Story 1
 
-- [ ] T028 [P] [US1] Create Template entity in backend/src/PromptTemplateManager.Core/Entities/Template.cs
-- [ ] T029 [P] [US1] Configure Template entity mapping in backend/src/PromptTemplateManager.Infrastructure/Data/ApplicationDbContext.cs
-- [ ] T030 [P] [US1] Create ITemplateRepository interface in backend/src/PromptTemplateManager.Core/Interfaces/ITemplateRepository.cs
-- [ ] T031 [P] [US1] Create CreateTemplateRequest DTO in backend/src/PromptTemplateManager.Application/DTOs/CreateTemplateRequest.cs
-- [ ] T032 [P] [US1] Create UpdateTemplateRequest DTO in backend/src/PromptTemplateManager.Application/DTOs/UpdateTemplateRequest.cs
-- [ ] T033 [P] [US1] Create TemplateResponse DTO in backend/src/PromptTemplateManager.Application/DTOs/TemplateResponse.cs
-- [ ] T034 [P] [US1] Create TemplateSummary DTO in backend/src/PromptTemplateManager.Application/DTOs/TemplateSummary.cs
-- [ ] T035 [P] [US1] Create TemplateListResponse DTO in backend/src/PromptTemplateManager.Application/DTOs/TemplateListResponse.cs
-- [ ] T036 [P] [US1] Create FluentValidation validator for CreateTemplateRequest in backend/src/PromptTemplateManager.Application/Validators/CreateTemplateRequestValidator.cs
-- [ ] T037 [P] [US1] Create FluentValidation validator for UpdateTemplateRequest in backend/src/PromptTemplateManager.Application/Validators/UpdateTemplateRequestValidator.cs
-- [ ] T038 [US1] Implement TemplateRepository in backend/src/PromptTemplateManager.Infrastructure/Repositories/TemplateRepository.cs
-- [ ] T039 [US1] Create ITemplateService interface in backend/src/PromptTemplateManager.Core/Interfaces/ITemplateService.cs
-- [ ] T040 [US1] Implement TemplateService with CRUD logic in backend/src/PromptTemplateManager.Application/Services/TemplateService.cs
-- [ ] T041 [US1] Create TemplatesController with CRUD endpoints in backend/src/PromptTemplateManager.Api/Controllers/TemplatesController.cs
-- [ ] T042 [US1] Create and apply initial EF Core migration for Template entity in backend/src/PromptTemplateManager.Infrastructure/Data/Migrations/
-- [ ] T043 [US1] Build backend and generate OpenAPI spec to shared/openapi/swagger.json
-- [ ] T044 [US1] Run openapi-typescript-codegen to generate TypeScript client in frontend/src/lib/api/
-- [ ] T045 [P] [US1] Create useTemplates custom hook in frontend/src/lib/hooks/useTemplates.ts
-- [ ] T046 [P] [US1] Create TemplateList component in frontend/src/components/templates/TemplateList.tsx
-- [ ] T047 [P] [US1] Create TemplateEditor component in frontend/src/components/templates/TemplateEditor.tsx
-- [ ] T048 [P] [US1] Create TemplateDialog component for create/edit in frontend/src/components/templates/TemplateDialog.tsx
-- [ ] T049 [US1] Create Templates page with list + CRUD operations in frontend/src/pages/Templates.tsx
-- [ ] T050 [US1] Add Templates route to React Router in frontend/src/App.tsx
-- [ ] T051 [US1] Add error handling and toast notifications for template operations in frontend/src/pages/Templates.tsx
+- [X] T028 [P] [US1] Create Template entity in backend/src/PromptTemplateManager.Core/Entities/Template.cs
+- [X] T029 [P] [US1] Configure Template entity mapping in backend/src/PromptTemplateManager.Infrastructure/Data/ApplicationDbContext.cs
+- [X] T030 [P] [US1] Create ITemplateRepository interface in backend/src/PromptTemplateManager.Core/Interfaces/ITemplateRepository.cs
+- [X] T031 [P] [US1] Create CreateTemplateRequest DTO in backend/src/PromptTemplateManager.Application/DTOs/CreateTemplateRequest.cs
+- [X] T032 [P] [US1] Create UpdateTemplateRequest DTO in backend/src/PromptTemplateManager.Application/DTOs/UpdateTemplateRequest.cs
+- [X] T033 [P] [US1] Create TemplateResponse DTO in backend/src/PromptTemplateManager.Application/DTOs/TemplateResponse.cs
+- [X] T034 [P] [US1] Create TemplateSummary DTO in backend/src/PromptTemplateManager.Application/DTOs/TemplateSummary.cs
+- [X] T035 [P] [US1] Create TemplateListResponse DTO in backend/src/PromptTemplateManager.Application/DTOs/TemplateListResponse.cs
+- [X] T036 [P] [US1] Create FluentValidation validator for CreateTemplateRequest in backend/src/PromptTemplateManager.Application/Validators/CreateTemplateRequestValidator.cs
+- [X] T037 [P] [US1] Create FluentValidation validator for UpdateTemplateRequest in backend/src/PromptTemplateManager.Application/Validators/UpdateTemplateRequestValidator.cs
+- [X] T038 [US1] Implement TemplateRepository in backend/src/PromptTemplateManager.Infrastructure/Repositories/TemplateRepository.cs
+- [X] T039 [US1] Create ITemplateService interface in backend/src/PromptTemplateManager.Core/Interfaces/ITemplateService.cs
+- [X] T040 [US1] Implement TemplateService with CRUD logic in backend/src/PromptTemplateManager.Application/Services/TemplateService.cs
+- [X] T041 [US1] Create TemplatesController with CRUD endpoints in backend/src/PromptTemplateManager.Api/Controllers/TemplatesController.cs
+- [X] T042 [US1] Create and apply initial EF Core migration for Template entity in backend/src/PromptTemplateManager.Infrastructure/Data/Migrations/
+- [X] T043 [US1] Build backend and generate OpenAPI spec to shared/openapi/swagger.json
+- [X] T044 [US1] Run openapi-typescript-codegen to generate TypeScript client in frontend/src/lib/api/
+- [X] T045 [P] [US1] Create useTemplates custom hook in frontend/src/lib/hooks/useTemplates.ts
+- [X] T046 [P] [US1] Create TemplateList component in frontend/src/components/templates/TemplateList.tsx
+- [X] T047 [P] [US1] Create TemplateEditor component in frontend/src/components/templates/TemplateEditor.tsx
+- [X] T048 [P] [US1] Create TemplateDialog component for create/edit in frontend/src/components/templates/TemplateDialog.tsx
+- [X] T049 [US1] Create Templates page with list + CRUD operations in frontend/src/pages/Templates.tsx
+- [X] T050 [US1] Add Templates route to React Router in frontend/src/App.tsx
+- [X] T051 [US1] Add error handling and toast notifications for template operations in frontend/src/pages/Templates.tsx
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently (MVP COMPLETE)
 
@@ -148,25 +148,25 @@
 
 ### Implementation for User Story 3
 
-- [ ] T078 [P] [US3] Create PlaceholderInfo DTO in backend/src/PromptTemplateManager.Application/DTOs/PlaceholderInfo.cs
-- [ ] T079 [P] [US3] Create PlaceholderListResponse DTO in backend/src/PromptTemplateManager.Application/DTOs/PlaceholderListResponse.cs
-- [ ] T080 [P] [US3] Create GeneratePromptRequest DTO in backend/src/PromptTemplateManager.Application/DTOs/GeneratePromptRequest.cs
-- [ ] T081 [P] [US3] Create PromptInstanceResponse DTO in backend/src/PromptTemplateManager.Application/DTOs/PromptInstanceResponse.cs
-- [ ] T082 [P] [US3] Create SendPromptResponse DTO in backend/src/PromptTemplateManager.Application/DTOs/SendPromptResponse.cs
-- [ ] T083 [P] [US3] Create IPlaceholderService interface in backend/src/PromptTemplateManager.Core/Interfaces/IPlaceholderService.cs
-- [ ] T084 [P] [US3] Create IDevinClient interface in backend/src/PromptTemplateManager.Core/Interfaces/IDevinClient.cs
-- [ ] T085 [US3] Implement PlaceholderService with regex parsing in backend/src/PromptTemplateManager.Application/Services/PlaceholderService.cs
-- [ ] T086 [US3] Implement DevinClient stub (returns success immediately) in backend/src/PromptTemplateManager.Infrastructure/DevinIntegration/DevinClient.cs
-- [ ] T087 [US3] Add placeholder endpoints to TemplatesController in backend/src/PromptTemplateManager.Api/Controllers/TemplatesController.cs
-- [ ] T088 [US3] Rebuild backend and regenerate OpenAPI spec to shared/openapi/swagger.json
-- [ ] T089 [US3] Regenerate TypeScript client in frontend/src/lib/api/
-- [ ] T090 [P] [US3] Create usePlaceholders custom hook in frontend/src/lib/hooks/usePlaceholders.ts
-- [ ] T091 [P] [US3] Create placeholder parsing utility in frontend/src/lib/utils/placeholders.ts
-- [ ] T092 [P] [US3] Create PlaceholderForm component in frontend/src/components/placeholders/PlaceholderForm.tsx
-- [ ] T093 [P] [US3] Create PromptPreview component in frontend/src/components/placeholders/PromptPreview.tsx
-- [ ] T094 [US3] Create TemplateUsage page with placeholder workflow in frontend/src/pages/TemplateUsage.tsx
-- [ ] T095 [US3] Add TemplateUsage route to React Router in frontend/src/App.tsx
-- [ ] T096 [US3] Add "Use Template" action button to TemplateList in frontend/src/components/templates/TemplateList.tsx
+- [x] T078 [P] [US3] Create PlaceholderInfo DTO in backend/src/PromptTemplateManager.Application/DTOs/PlaceholderInfo.cs
+- [x] T079 [P] [US3] Create PlaceholderListResponse DTO in backend/src/PromptTemplateManager.Application/DTOs/PlaceholderListResponse.cs
+- [x] T080 [P] [US3] Create GeneratePromptRequest DTO in backend/src/PromptTemplateManager.Application/DTOs/GeneratePromptRequest.cs
+- [x] T081 [P] [US3] Create PromptInstanceResponse DTO in backend/src/PromptTemplateManager.Application/DTOs/PromptInstanceResponse.cs
+- [x] T082 [P] [US3] Create SendPromptResponse DTO in backend/src/PromptTemplateManager.Application/DTOs/SendPromptResponse.cs
+- [x] T083 [P] [US3] Create IPlaceholderService interface in backend/src/PromptTemplateManager.Core/Interfaces/IPlaceholderService.cs
+- [x] T084 [P] [US3] Create IDevinClient interface in backend/src/PromptTemplateManager.Core/Interfaces/IDevinClient.cs
+- [x] T085 [US3] Implement PlaceholderService with regex parsing in backend/src/PromptTemplateManager.Application/Services/PlaceholderService.cs
+- [x] T086 [US3] Implement DevinClient stub (returns success immediately) in backend/src/PromptTemplateManager.Infrastructure/DevinIntegration/DevinClient.cs
+- [x] T087 [US3] Add placeholder endpoints to TemplatesController in backend/src/PromptTemplateManager.Api/Controllers/TemplatesController.cs
+- [x] T088 [US3] Rebuild backend and regenerate OpenAPI spec to shared/openapi/swagger.json
+- [x] T089 [US3] Regenerate TypeScript client in frontend/src/lib/api/
+- [x] T090 [P] [US3] Create usePlaceholders custom hook in frontend/src/lib/hooks/usePlaceholders.ts
+- [x] T091 [P] [US3] Create placeholder parsing utility in frontend/src/lib/utils/placeholders.ts
+- [x] T092 [P] [US3] Create PlaceholderForm component in frontend/src/components/placeholders/PlaceholderForm.tsx
+- [x] T093 [P] [US3] Create PromptPreview component in frontend/src/components/placeholders/PromptPreview.tsx
+- [x] T094 [US3] Create TemplateUsage page with placeholder workflow in frontend/src/pages/TemplateUsage.tsx
+- [x] T095 [US3] Add TemplateUsage route to React Router in frontend/src/App.tsx
+- [x] T096 [US3] Add "Use Template" action button to TemplateList in frontend/src/components/templates/TemplateList.tsx
 
 **Checkpoint**: All user stories 1, 2, AND 3 should now be independently functional
 
@@ -180,21 +180,21 @@
 
 ### Implementation for User Story 4
 
-- [ ] T097 [US4] Create SQLite FTS5 virtual table in EF Core migration in backend/src/PromptTemplateManager.Infrastructure/Data/Migrations/
-- [ ] T098 [US4] Add FTS5 triggers for insert/update/delete in migration in backend/src/PromptTemplateManager.Infrastructure/Data/Migrations/
-- [ ] T099 [US4] Add SearchTemplates method to ITemplateRepository in backend/src/PromptTemplateManager.Core/Interfaces/ITemplateRepository.cs
-- [ ] T100 [US4] Implement FTS5 search query in TemplateRepository in backend/src/PromptTemplateManager.Infrastructure/Repositories/TemplateRepository.cs
-- [ ] T101 [US4] Add SearchTemplates method to ITemplateService in backend/src/PromptTemplateManager.Core/Interfaces/ITemplateService.cs
-- [ ] T102 [US4] Implement search logic in TemplateService in backend/src/PromptTemplateManager.Application/Services/TemplateService.cs
-- [ ] T103 [US4] Create SearchController with search endpoint in backend/src/PromptTemplateManager.Api/Controllers/SearchController.cs
-- [ ] T104 [US4] Rebuild backend and regenerate OpenAPI spec to shared/openapi/swagger.json
-- [ ] T105 [US4] Regenerate TypeScript client in frontend/src/lib/api/
-- [ ] T106 [P] [US4] Create useSearch custom hook in frontend/src/lib/hooks/useSearch.ts
-- [ ] T107 [P] [US4] Create SearchBar component with debounced input in frontend/src/components/search/SearchBar.tsx
-- [ ] T108 [P] [US4] Create SearchResults component in frontend/src/components/search/SearchResults.tsx
-- [ ] T109 [US4] Create Search page in frontend/src/pages/Search.tsx
-- [ ] T110 [US4] Add Search route to React Router in frontend/src/App.tsx
-- [ ] T111 [US4] Add search input to Templates page header in frontend/src/pages/Templates.tsx
+- [x] T097 [US4] Create SQLite FTS5 virtual table in EF Core migration in backend/src/PromptTemplateManager.Infrastructure/Data/Migrations/
+- [x] T098 [US4] Add FTS5 triggers for insert/update/delete in migration in backend/src/PromptTemplateManager.Infrastructure/Data/Migrations/
+- [x] T099 [US4] Add SearchTemplates method to ITemplateRepository in backend/src/PromptTemplateManager.Core/Interfaces/ITemplateRepository.cs
+- [x] T100 [US4] Implement FTS5 search query in TemplateRepository in backend/src/PromptTemplateManager.Infrastructure/Repositories/TemplateRepository.cs
+- [x] T101 [US4] Add SearchTemplates method to ITemplateService in backend/src/PromptTemplateManager.Core/Interfaces/ITemplateService.cs
+- [x] T102 [US4] Implement search logic in TemplateService in backend/src/PromptTemplateManager.Application/Services/TemplateService.cs
+- [x] T103 [US4] Create SearchController with search endpoint in backend/src/PromptTemplateManager.Api/Controllers/SearchController.cs
+- [x] T104 [US4] Rebuild backend and regenerate OpenAPI spec to shared/openapi/swagger.json
+- [x] T105 [US4] Regenerate TypeScript client in frontend/src/lib/api/
+- [x] T106 [P] [US4] Create useSearch custom hook in frontend/src/lib/hooks/useSearch.ts
+- [x] T107 [P] [US4] Create SearchBar component with debounced input in frontend/src/components/search/SearchBar.tsx
+- [x] T108 [P] [US4] Create SearchResults component in frontend/src/components/search/SearchResults.tsx
+- [x] T109 [US4] Create Search page in frontend/src/pages/Search.tsx
+- [x] T110 [US4] Add Search route to React Router in frontend/src/App.tsx
+- [x] T111 [US4] Add search input to Templates page header in frontend/src/components/TemplateList.tsx
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -204,17 +204,17 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T112 [P] Add loading states to all async operations in frontend/src/components/
+- [x] T112 [P] Add loading states to all async operations in frontend/src/components/
 - [ ] T113 [P] Add accessibility attributes (aria-labels, keyboard navigation) to interactive components in frontend/src/components/
-- [ ] T114 [P] Implement response compression middleware in backend/src/PromptTemplateManager.Api/Program.cs
-- [ ] T115 [P] Add request logging middleware in backend/src/PromptTemplateManager.Api/Middleware/RequestLoggingMiddleware.cs
-- [ ] T116 [P] Configure performance monitoring in backend/src/PromptTemplateManager.Api/Program.cs
-- [ ] T117 [P] Add bundle size check to frontend build script in frontend/package.json
-- [ ] T118 [P] Optimize Vite build with code splitting in frontend/vite.config.ts
-- [ ] T119 Create .gitignore files for backend/ and frontend/
-- [ ] T120 Create .dockerignore file at repository root
+- [x] T114 [P] Implement response compression middleware in backend/src/PromptTemplateManager.Api/Program.cs
+- [x] T115 [P] Add request logging middleware in backend/src/PromptTemplateManager.Api/Middleware/RequestLoggingMiddleware.cs
+- [x] T116 [P] Configure performance monitoring in backend/src/PromptTemplateManager.Api/Program.cs
+- [x] T117 [P] Add bundle size check to frontend build script in frontend/package.json
+- [x] T118 [P] Optimize Vite build with code splitting in frontend/vite.config.ts
+- [x] T119 Create .gitignore files for backend/ and frontend/
+- [x] T120 Create .dockerignore file at repository root
 - [ ] T121 Validate quickstart.md scenarios manually (all 4 scenarios)
-- [ ] T122 [P] Update README.md with setup and run instructions at repository root
+- [x] T122 [P] Update README.md with setup and run instructions at repository root
 - [ ] T123 [P] Document API endpoints in backend/README.md
 - [ ] T124 [P] Document frontend architecture in frontend/README.md
 

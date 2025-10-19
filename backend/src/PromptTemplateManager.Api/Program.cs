@@ -5,6 +5,7 @@ using PromptTemplateManager.Application.Services;
 using PromptTemplateManager.Application.Validators;
 using PromptTemplateManager.Core.Interfaces;
 using PromptTemplateManager.Infrastructure.Data;
+using PromptTemplateManager.Infrastructure.DevinIntegration;
 using PromptTemplateManager.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add response compression
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+});
+
+// Add health checks
+builder.Services.AddHealthChecks();
 
 // Configure SQLite
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -36,6 +46,8 @@ builder.Services.AddScoped<IFolderRepository, FolderRepository>();
 // Register services
 builder.Services.AddScoped<ITemplateService, TemplateService>();
 builder.Services.AddScoped<IFolderService, FolderService>();
+builder.Services.AddScoped<IPlaceholderService, PlaceholderService>();
+builder.Services.AddScoped<IDevinClient, DevinClient>();
 
 // Register validators
 builder.Services.AddValidatorsFromAssemblyContaining<CreateTemplateRequestValidator>();
@@ -49,7 +61,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 app.UseMiddleware<ErrorHandlingMiddleware>();
+
+app.UseResponseCompression();
 
 app.UseCors();
 
@@ -57,11 +73,14 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Ensure database is created
+// Map health check endpoint
+app.MapHealthChecks("/health");
+
+// Apply database migrations
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.EnsureCreated();
+    dbContext.Database.Migrate();
 }
 
 app.Run();

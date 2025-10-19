@@ -7,6 +7,7 @@ interface FolderDialogProps {
   parentFolderId: string | null;
   onSave: (name: string, parentFolderId: string | null) => void;
   onClose: () => void;
+  isLoading?: boolean;
 }
 
 export default function FolderDialog({
@@ -14,6 +15,7 @@ export default function FolderDialog({
   parentFolderId,
   onSave,
   onClose,
+  isLoading = false,
 }: FolderDialogProps) {
   const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +57,7 @@ export default function FolderDialog({
       <div className="folder-dialog" onClick={(e) => e.stopPropagation()}>
         <div className="dialog-header">
           <h2>{folder ? 'Rename Folder' : 'Create New Folder'}</h2>
-          <button onClick={onClose} className="btn-close">
+          <button onClick={onClose} className="btn-close" disabled={isLoading}>
             ✕
           </button>
         </div>
@@ -72,16 +74,17 @@ export default function FolderDialog({
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter folder name"
               autoFocus
+              disabled={isLoading}
               required
             />
           </div>
 
           <div className="dialog-actions">
-            <button type="button" onClick={onClose} className="btn-cancel">
+            <button type="button" onClick={onClose} className="btn-cancel" disabled={isLoading}>
               Cancel
             </button>
-            <button type="submit" className="btn-submit">
-              {folder ? 'Rename' : 'Create'}
+            <button type="submit" className="btn-submit" disabled={isLoading}>
+              {isLoading ? 'Saving...' : folder ? 'Rename' : 'Create'}
             </button>
           </div>
         </form>

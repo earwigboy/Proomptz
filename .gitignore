@@ -91,9 +91,6 @@ coverage/
 *.coveragexml
 TestResults/
 
-# Build outputs
-shared/openapi/swagger.json
-
 # OS files
 .DS_Store
 Thumbs.db

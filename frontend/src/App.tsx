@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import TemplateList from './components/TemplateList';
 import TemplateForm from './components/TemplateForm';
+import TemplateUsage from './pages/TemplateUsage';
+import Search from './pages/Search';
 import FolderTree from './components/folders/FolderTree';
 import FolderDialog from './components/folders/FolderDialog';
 import FolderContextMenu from './components/folders/FolderContextMenu';
@@ -10,7 +13,7 @@ import { templatesApi } from './lib/api-client';
 import type { Template, Folder } from './lib/api-client';
 import './App.css';
 
-function App() {
+function HomePage() {
   const queryClient = useQueryClient();
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -75,34 +78,53 @@ function App() {
     setShowFolderDialog(true);
   };
 
-  const handleDeleteFolder = async (folderId: string) => {
+  const handleDeleteFolder = (folderId: string) => {
     if (window.confirm('Are you sure you want to delete this folder? It must be empty.')) {
-      try {
-        await deleteFolder.mutateAsync(folderId);
-        if (selectedFolderId === folderId) {
-          setSelectedFolderId(null);
-        }
-      } catch (error: any) {
-        alert(error.response?.data?.message || 'Failed to delete folder');
-      }
+      deleteFolder.mutate(folderId, {
+        onSuccess: () => {
+          if (selectedFolderId === folderId) {
+            setSelectedFolderId(null);
+          }
+        },
+        onError: (error: any) => {
+          alert(error.response?.data?.message || 'Failed to delete folder');
+        },
+      });
     }
   };
 
-  const handleSaveFolder = async (name: string, parentFolderId: string | null) => {
-    try {
-      if (editingFolder) {
-        await updateFolder.mutateAsync({
+  const handleSaveFolder = (name: string, parentFolderId: string | null) => {
+    if (editingFolder) {
+      updateFolder.mutate(
+        {
           id: editingFolder.id,
           data: { name, parentFolderId },
-        });
-      } else {
-        await createFolder.mutateAsync({ name, parentFolderId });
-      }
-      setShowFolderDialog(false);
-      setEditingFolder(null);
-      setNewFolderParentId(null);
-    } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to save folder');
+        },
+        {
+          onSuccess: () => {
+            setShowFolderDialog(false);
+            setEditingFolder(null);
+            setNewFolderParentId(null);
+          },
+          onError: (error: any) => {
+            alert(error.response?.data?.message || 'Failed to update folder');
+          },
+        }
+      );
+    } else {
+      createFolder.mutate(
+        { name, parentFolderId },
+        {
+          onSuccess: () => {
+            setShowFolderDialog(false);
+            setEditingFolder(null);
+            setNewFolderParentId(null);
+          },
+          onError: (error: any) => {
+            alert(error.response?.data?.message || 'Failed to create folder');
+          },
+        }
+      );
     }
   };
 
@@ -113,6 +135,8 @@ function App() {
   const handleTemplateDrop = (templateId: string, targetFolderId: string | null) => {
     moveTemplateMutation.mutate({ templateId, folderId: targetFolderId });
   };
+
+  const isOperationPending = moveTemplateMutation.isPending || deleteFolder.isPending;
 
   return (
     <div className="app-container">
@@ -132,7 +156,27 @@ function App() {
             />
           )}
         </aside>
-        <main className="content-area">
+        <main className="content-area" style={{ position: 'relative' }}>
+          {isOperationPending && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                background: 'rgba(100, 108, 255, 0.1)',
+                border: '1px solid rgba(100, 108, 255, 0.3)',
+                padding: '0.75rem',
+                textAlign: 'center',
+                zIndex: 100,
+                color: '#646cff',
+                fontSize: '0.875rem',
+              }}
+            >
+              {moveTemplateMutation.isPending && 'Moving template...'}
+              {deleteFolder.isPending && 'Deleting folder...'}
+            </div>
+          )}
           {showForm ? (
             <TemplateForm
               template={editingTemplate}
@@ -159,6 +203,7 @@ function App() {
             setEditingFolder(null);
             setNewFolderParentId(null);
           }}
+          isLoading={createFolder.isPending || updateFolder.isPending}
         />
       )}
 
@@ -173,6 +218,18 @@ function App() {
         />
       )}
     </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/use/:id" element={<TemplateUsage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

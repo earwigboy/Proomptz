@@ -1,6 +1,3 @@
 @PromptTemplateManager.Api_HostAddress = http://localhost:5026
 
-GET {{PromptTemplateManager.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
 ###
