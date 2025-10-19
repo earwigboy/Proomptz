@@ -32,7 +32,7 @@ export default function SearchResults({ results, isLoading, query }: SearchResul
 
   return (
     <div className="search-results">
-      <div style={{ marginBottom: '1rem', color: '#888' }}>
+      <div style={{ marginBottom: '1rem', color: '#888' }} role="status" aria-live="polite">
         <p>Found {results.length} result{results.length !== 1 ? 's' : ''} for "{query}"</p>
       </div>
 
@@ -40,7 +40,7 @@ export default function SearchResults({ results, isLoading, query }: SearchResul
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: '1.5rem'
-      }}>
+      }} role="list" aria-label="Search results">
         {results.map((template) => (
           <div
             key={template.id}
@@ -53,6 +53,15 @@ export default function SearchResults({ results, isLoading, query }: SearchResul
               cursor: 'pointer',
             }}
             onClick={() => navigate(`/use/${template.id}`)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                navigate(`/use/${template.id}`);
+              }
+            }}
+            tabIndex={0}
+            role="listitem"
+            aria-label={`Template: ${template.name}`}
           >
             <div className="template-header">
               <h3>{template.name}</h3>
@@ -89,6 +98,7 @@ export default function SearchResults({ results, isLoading, query }: SearchResul
                 }}
                 className="btn-create"
                 style={{ fontSize: '0.875rem', padding: '0.375rem 0.75rem' }}
+                aria-label={`Use template ${template.name}`}
               >
                 Use Template
               </button>

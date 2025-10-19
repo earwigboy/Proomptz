@@ -205,7 +205,7 @@
 **Purpose**: Improvements that affect multiple user stories
 
 - [x] T112 [P] Add loading states to all async operations in frontend/src/components/
-- [ ] T113 [P] Add accessibility attributes (aria-labels, keyboard navigation) to interactive components in frontend/src/components/
+- [x] T113 [P] Add accessibility attributes (aria-labels, keyboard navigation) to interactive components in frontend/src/components/
 - [x] T114 [P] Implement response compression middleware in backend/src/PromptTemplateManager.Api/Program.cs
 - [x] T115 [P] Add request logging middleware in backend/src/PromptTemplateManager.Api/Middleware/RequestLoggingMiddleware.cs
 - [x] T116 [P] Configure performance monitoring in backend/src/PromptTemplateManager.Api/Program.cs

@@ -49,13 +49,21 @@ export default function TemplateUsage() {
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
       <div style={{ marginBottom: '2rem' }}>
-        <button onClick={() => navigate('/')} style={{ marginBottom: '1rem' }}>
+        <button
+          onClick={() => navigate('/')}
+          style={{ marginBottom: '1rem' }}
+          aria-label="Go back to templates list"
+        >
           ← Back to Templates
         </button>
-        <h2>Use Template: {template.name}</h2>
+        <h1>Use Template: {template.name}</h1>
       </div>
 
-      {error && <div className="error-message">{error}</div>}
+      {error && (
+        <div className="error-message" role="alert" aria-live="assertive">
+          {error}
+        </div>
+      )}
       {success && (
         <div
           style={{
@@ -66,6 +74,8 @@ export default function TemplateUsage() {
             color: '#10b981',
             marginBottom: '1rem',
           }}
+          role="status"
+          aria-live="polite"
         >
           {success}
         </div>
@@ -89,11 +99,18 @@ export default function TemplateUsage() {
               disabled={!allFilled || sendMutation.isPending}
               className="btn-submit"
               style={{ width: '100%' }}
+              aria-label="Send prompt to Devin"
+              aria-busy={sendMutation.isPending}
+              aria-disabled={!allFilled}
             >
               {sendMutation.isPending ? 'Sending...' : 'Send to Devin'}
             </button>
             {!allFilled && placeholders.length > 0 && (
-              <p style={{ color: '#888', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+              <p
+                style={{ color: '#888', fontSize: '0.875rem', marginTop: '0.5rem' }}
+                role="status"
+                aria-live="polite"
+              >
                 Please fill all placeholders to send
               </p>
             )}

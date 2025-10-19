@@ -50,6 +50,8 @@ export default function FolderContextMenu({
         top: `${position.y}px`,
         left: `${position.x}px`,
       }}
+      role="menu"
+      aria-label="Folder actions menu"
     >
       <button
         className="context-menu-item"
@@ -57,8 +59,10 @@ export default function FolderContextMenu({
           onRename();
           onClose();
         }}
+        role="menuitem"
+        aria-label="Rename folder"
       >
-        <span className="menu-icon">✏️</span>
+        <span className="menu-icon" aria-hidden="true">✏️</span>
         Rename
       </button>
       <button
@@ -67,19 +71,23 @@ export default function FolderContextMenu({
           onCreateSubfolder();
           onClose();
         }}
+        role="menuitem"
+        aria-label="Create new subfolder"
       >
-        <span className="menu-icon">📁</span>
+        <span className="menu-icon" aria-hidden="true">📁</span>
         New Subfolder
       </button>
-      <div className="context-menu-divider"></div>
+      <div className="context-menu-divider" role="separator"></div>
       <button
         className="context-menu-item danger"
         onClick={() => {
           onDelete();
           onClose();
         }}
+        role="menuitem"
+        aria-label="Delete folder"
       >
-        <span className="menu-icon">🗑️</span>
+        <span className="menu-icon" aria-hidden="true">🗑️</span>
         Delete
       </button>
     </div>

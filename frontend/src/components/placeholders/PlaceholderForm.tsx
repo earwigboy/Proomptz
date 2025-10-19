@@ -21,21 +21,25 @@ export default function PlaceholderForm({
 
   return (
     <div className="placeholder-form">
-      <h3>Fill Placeholder Values</h3>
-      {placeholders.map((placeholder) => (
-        <div key={placeholder} className="form-group">
-          <label htmlFor={`placeholder-${placeholder}`}>
-            {placeholder.replace(/_/g, ' ')}
-          </label>
-          <input
-            id={`placeholder-${placeholder}`}
-            type="text"
-            value={values[placeholder] || ''}
-            onChange={(e) => onValueChange(placeholder, e.target.value)}
-            placeholder={`Enter value for ${placeholder}`}
-          />
-        </div>
-      ))}
+      <h3 id="placeholder-form-heading">Fill Placeholder Values</h3>
+      <form aria-labelledby="placeholder-form-heading">
+        {placeholders.map((placeholder) => (
+          <div key={placeholder} className="form-group">
+            <label htmlFor={`placeholder-${placeholder}`}>
+              {placeholder.replace(/_/g, ' ')}
+            </label>
+            <input
+              id={`placeholder-${placeholder}`}
+              type="text"
+              value={values[placeholder] || ''}
+              onChange={(e) => onValueChange(placeholder, e.target.value)}
+              placeholder={`Enter value for ${placeholder}`}
+              aria-label={`Value for ${placeholder.replace(/_/g, ' ')}`}
+              aria-required="true"
+            />
+          </div>
+        ))}
+      </form>
     </div>
   );
 }

@@ -25,10 +25,11 @@ export default function Search() {
             borderRadius: '4px',
             cursor: 'pointer',
           }}
+          aria-label="Go back to templates list"
         >
           ← Back to Templates
         </button>
-        <h2>Search Templates</h2>
+        <h1>Search Templates</h1>
       </div>
 
       <div style={{ marginBottom: '2rem' }}>

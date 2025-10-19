@@ -7,12 +7,18 @@ interface SearchBarProps {
 
 export default function SearchBar({ value, onChange, placeholder = 'Search templates...', isSearching = false }: SearchBarProps) {
   return (
-    <div className="search-bar" style={{ position: 'relative', width: '100%' }}>
+    <div className="search-bar" style={{ position: 'relative', width: '100%' }} role="search">
+      <label htmlFor="template-search" style={{ position: 'absolute', left: '-10000px' }}>
+        Search templates
+      </label>
       <input
-        type="text"
+        id="template-search"
+        type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        aria-label="Search templates by name or content"
+        aria-busy={isSearching}
         style={{
           width: '100%',
           padding: '0.75rem 2.5rem 0.75rem 1rem',
@@ -51,7 +57,8 @@ export default function SearchBar({ value, onChange, placeholder = 'Search templ
             fontSize: '1.5rem',
             padding: 0,
           }}
-          aria-label="Clear search"
+          aria-label="Clear search input"
+          title="Clear search"
         >
           ×
         </button>

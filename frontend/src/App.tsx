@@ -140,11 +140,11 @@ function HomePage() {
 
   return (
     <div className="app-container">
-      <header>
+      <header role="banner">
         <h1>Prompt Template Manager</h1>
       </header>
       <div className="main-content">
-        <aside className="sidebar">
+        <aside className="sidebar" role="complementary" aria-label="Folder navigation">
           {folderTree && (
             <FolderTree
               folders={folderTree.rootFolders}
@@ -156,7 +156,7 @@ function HomePage() {
             />
           )}
         </aside>
-        <main className="content-area" style={{ position: 'relative' }}>
+        <main className="content-area" style={{ position: 'relative' }} role="main">
           {isOperationPending && (
             <div
               style={{
@@ -172,6 +172,9 @@ function HomePage() {
                 color: '#646cff',
                 fontSize: '0.875rem',
               }}
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
             >
               {moveTemplateMutation.isPending && 'Moving template...'}
               {deleteFolder.isPending && 'Deleting folder...'}

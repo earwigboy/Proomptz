@@ -13,7 +13,7 @@ export default function PromptPreview({
 
   return (
     <div className="prompt-preview">
-      <h3>Preview</h3>
+      <h3 id="prompt-preview-heading">Preview</h3>
       <div
         style={{
           background: '#1a1a1a',
@@ -27,6 +27,11 @@ export default function PromptPreview({
           maxHeight: '400px',
           overflow: 'auto',
         }}
+        role="region"
+        aria-labelledby="prompt-preview-heading"
+        aria-live="polite"
+        aria-atomic="true"
+        tabIndex={0}
       >
         {generatedPrompt}
       </div>

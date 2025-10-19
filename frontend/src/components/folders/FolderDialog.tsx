@@ -26,6 +26,17 @@ export default function FolderDialog({
     }
   }, [folder]);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isLoading) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [onClose, isLoading]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -53,11 +64,22 @@ export default function FolderDialog({
   };
 
   return (
-    <div className="folder-dialog-overlay" onClick={onClose}>
+    <div
+      className="folder-dialog-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="folder-dialog-title"
+    >
       <div className="folder-dialog" onClick={(e) => e.stopPropagation()}>
         <div className="dialog-header">
-          <h2>{folder ? 'Rename Folder' : 'Create New Folder'}</h2>
-          <button onClick={onClose} className="btn-close" disabled={isLoading}>
+          <h2 id="folder-dialog-title">{folder ? 'Rename Folder' : 'Create New Folder'}</h2>
+          <button
+            onClick={onClose}
+            className="btn-close"
+            disabled={isLoading}
+            aria-label="Close dialog"
+          >
             ✕
           </button>
         </div>

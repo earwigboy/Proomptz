@@ -68,10 +68,15 @@ export default function TemplateList({ onEdit, onCreate, selectedFolderId }: Tem
             onClick={() => navigate('/search')}
             className="btn-edit"
             style={{ padding: '0.5rem 1rem' }}
+            aria-label="Search templates"
           >
             🔍 Search
           </button>
-          <button onClick={onCreate} className="btn-create">
+          <button
+            onClick={onCreate}
+            className="btn-create"
+            aria-label="Create new template"
+          >
             Create New Template
           </button>
         </div>
@@ -86,7 +91,7 @@ export default function TemplateList({ onEdit, onCreate, selectedFolderId }: Tem
           </p>
         </div>
       ) : (
-        <div className="templates-grid">
+        <div className="templates-grid" role="list">
           {templates.map((template) => (
             <div
               key={template.id}
@@ -96,6 +101,8 @@ export default function TemplateList({ onEdit, onCreate, selectedFolderId }: Tem
                 e.dataTransfer.setData('templateId', template.id);
                 e.dataTransfer.effectAllowed = 'move';
               }}
+              role="listitem"
+              aria-label={`Template: ${template.name}`}
             >
               <div className="template-header">
                 <h3>{template.name}</h3>
@@ -117,11 +124,12 @@ export default function TemplateList({ onEdit, onCreate, selectedFolderId }: Tem
                 <div className="template-dates">
                   <small>Updated: {new Date(template.updatedAt).toLocaleDateString()}</small>
                 </div>
-                <div className="template-actions">
+                <div className="template-actions" role="group" aria-label="Template actions">
                   <button
                     onClick={() => navigate(`/use/${template.id}`)}
                     className="btn-create"
                     style={{ fontSize: '0.875rem', padding: '0.375rem 0.75rem' }}
+                    aria-label={`Use template ${template.name}`}
                   >
                     Use
                   </button>
@@ -139,6 +147,8 @@ export default function TemplateList({ onEdit, onCreate, selectedFolderId }: Tem
                     }}
                     className="btn-edit"
                     disabled={loadingTemplateId === template.id}
+                    aria-label={`Edit template ${template.name}`}
+                    aria-busy={loadingTemplateId === template.id}
                   >
                     {loadingTemplateId === template.id ? 'Loading...' : 'Edit'}
                   </button>
@@ -146,6 +156,8 @@ export default function TemplateList({ onEdit, onCreate, selectedFolderId }: Tem
                     onClick={() => handleDelete(template.id, template.name)}
                     className="btn-delete"
                     disabled={deleteMutation.isPending}
+                    aria-label={`Delete template ${template.name}`}
+                    aria-busy={deleteMutation.isPending}
                   >
                     Delete
                   </button>

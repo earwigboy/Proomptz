@@ -33,7 +33,7 @@ function FolderTreeItem({
   const hasChildren = folder.childFolders && folder.childFolders.length > 0;
 
   return (
-    <div className="folder-tree-item">
+    <div className="folder-tree-item" role="treeitem" aria-expanded={hasChildren ? isExpanded : undefined}>
       <div
         className={`folder-item ${selectedFolderId === folder.id ? 'selected' : ''} ${isDragOver ? 'drag-over' : ''}`}
         style={{ paddingLeft: `${level * 20 + 8}px` }}
@@ -42,6 +42,22 @@ function FolderTreeItem({
           e.preventDefault();
           onFolderContextMenu(folder.id, e);
         }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onFolderSelect(folder.id);
+          } else if (e.key === 'ArrowRight' && hasChildren && !isExpanded) {
+            e.preventDefault();
+            setIsExpanded(true);
+          } else if (e.key === 'ArrowLeft' && isExpanded) {
+            e.preventDefault();
+            setIsExpanded(false);
+          }
+        }}
+        tabIndex={0}
+        role="button"
+        aria-label={`Folder: ${folder.name}, ${folder.templateCount} templates`}
+        aria-selected={selectedFolderId === folder.id}
         onDragOver={(e) => {
           e.preventDefault();
           e.dataTransfer.dropEffect = 'move';
@@ -66,14 +82,26 @@ function FolderTreeItem({
               e.stopPropagation();
               setIsExpanded(!isExpanded);
             }}
+            role="button"
+            aria-label={isExpanded ? 'Collapse folder' : 'Expand folder'}
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }
+            }}
           >
             {isExpanded ? '▼' : '▶'}
           </span>
         )}
         {!hasChildren && <span className="folder-toggle-placeholder"></span>}
-        <span className="folder-icon">📁</span>
+        <span className="folder-icon" aria-hidden="true">📁</span>
         <span className="folder-name">{folder.name}</span>
-        <span className="folder-count">({folder.templateCount})</span>
+        <span className="folder-count" aria-label={`${folder.templateCount} templates`}>
+          ({folder.templateCount})
+        </span>
       </div>
       {isExpanded && hasChildren && (
         <div className="folder-children">
@@ -113,13 +141,25 @@ export default function FolderTree({
           onClick={() => onCreateSubfolder('')}
           className="btn-new-folder"
           title="Create root folder"
+          aria-label="Create new root folder"
         >
           +
         </button>
       </div>
-      <div
-        className={`folder-item ${selectedFolderId === null ? 'selected' : ''} ${isDragOverRoot ? 'drag-over' : ''}`}
-        onClick={() => onFolderSelect(null)}
+      <nav role="tree" aria-label="Folder navigation">
+        <div
+          className={`folder-item ${selectedFolderId === null ? 'selected' : ''} ${isDragOverRoot ? 'drag-over' : ''}`}
+          onClick={() => onFolderSelect(null)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onFolderSelect(null);
+            }
+          }}
+          tabIndex={0}
+          role="treeitem"
+          aria-label="All Templates root folder"
+          aria-selected={selectedFolderId === null}
         onDragOver={(e) => {
           e.preventDefault();
           e.dataTransfer.dropEffect = 'move';
@@ -136,21 +176,22 @@ export default function FolderTree({
             onTemplateDrop(templateId, null);
           }
         }}
-      >
-        <span className="folder-icon">📂</span>
-        <span className="folder-name">All Templates</span>
-      </div>
-      {folders.map((folder) => (
-        <FolderTreeItem
-          key={folder.id}
-          folder={folder}
-          selectedFolderId={selectedFolderId}
-          onFolderSelect={onFolderSelect}
-          onFolderContextMenu={onFolderContextMenu}
-          onCreateSubfolder={onCreateSubfolder}
-          onTemplateDrop={onTemplateDrop}
-        />
-      ))}
+        >
+          <span className="folder-icon" aria-hidden="true">📂</span>
+          <span className="folder-name">All Templates</span>
+        </div>
+        {folders.map((folder) => (
+          <FolderTreeItem
+            key={folder.id}
+            folder={folder}
+            selectedFolderId={selectedFolderId}
+            onFolderSelect={onFolderSelect}
+            onFolderContextMenu={onFolderContextMenu}
+            onCreateSubfolder={onCreateSubfolder}
+            onTemplateDrop={onTemplateDrop}
+          />
+        ))}
+      </nav>
     </div>
   );
 }
