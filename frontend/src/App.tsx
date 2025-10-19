@@ -15,7 +15,29 @@ import { useFolders } from './lib/hooks/useFolders';
 import { templatesApi } from './lib/api-client';
 import type { Template, Folder } from './lib/api-client';
 import { Toaster } from '@/components/ui/sonner';
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarInset,
+  SidebarTrigger
+} from '@/components/ui/sidebar';
+import { Separator } from '@/components/ui/separator';
 import './App.css';
+
+function AppSidebar({ children }: { children: React.ReactNode }) {
+  return (
+    <Sidebar>
+      <SidebarHeader>
+        <h2 className="px-2 text-lg font-semibold">Folders</h2>
+      </SidebarHeader>
+      <SidebarContent>
+        {children}
+      </SidebarContent>
+    </Sidebar>
+  );
+}
 
 function HomePage() {
   const queryClient = useQueryClient();
@@ -151,24 +173,28 @@ function HomePage() {
   const isOperationPending = moveTemplateMutation.isPending || deleteFolder.isPending;
 
   return (
-    <div className="app-container">
-      <header role="banner">
-        <h1>Prompt Template Manager</h1>
-      </header>
-      <div className="main-content">
-        <aside className="sidebar" role="complementary" aria-label="Folder navigation">
-          {folderTree && folderTree.rootFolders && (
-            <FolderTree
-              folders={folderTree.rootFolders}
-              selectedFolderId={selectedFolderId}
-              onFolderSelect={handleFolderSelect}
-              onFolderContextMenu={handleFolderContextMenu}
-              onCreateSubfolder={handleCreateFolder}
-              onTemplateDrop={handleTemplateDrop}
-            />
-          )}
-        </aside>
-        <main className="content-area" style={{ position: 'relative' }} role="main">
+    <>
+      <AppSidebar>
+        {folderTree && folderTree.rootFolders && (
+          <FolderTree
+            folders={folderTree.rootFolders}
+            selectedFolderId={selectedFolderId}
+            onFolderSelect={handleFolderSelect}
+            onFolderContextMenu={handleFolderContextMenu}
+            onCreateSubfolder={handleCreateFolder}
+            onTemplateDrop={handleTemplateDrop}
+          />
+        )}
+      </AppSidebar>
+
+      <SidebarInset>
+        <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4">
+          <SidebarTrigger />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <h1 className="text-xl font-semibold">Prompt Template Manager</h1>
+        </header>
+
+        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 lg:p-8" style={{ position: 'relative' }}>
           {isOperationPending && (
             <div
               style={{
@@ -206,7 +232,7 @@ function HomePage() {
             />
           )}
         </main>
-      </div>
+      </SidebarInset>
 
       {showFolderDialog && (
         <FolderDialog
@@ -232,7 +258,7 @@ function HomePage() {
           onClose={() => setContextMenu(null)}
         />
       )}
-    </div>
+    </>
   );
 }
 
@@ -247,14 +273,16 @@ function LoadingFallback() {
 function App() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/use/:id" element={<TemplateUsage />} />
-        </Routes>
-      </Suspense>
-      <Toaster />
+      <SidebarProvider defaultOpen={true}>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/use/:id" element={<TemplateUsage />} />
+          </Routes>
+        </Suspense>
+        <Toaster />
+      </SidebarProvider>
     </BrowserRouter>
   );
 }

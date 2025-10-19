@@ -12,28 +12,16 @@
   min-height: 100vh;
 }
 
-header {
-  padding: 1rem 2rem;
-  border-bottom: 2px solid #646cff;
-  background: #1a1a1a;
-}
-
-header h1 {
-  margin: 0;
-  color: #646cff;
-}
+/* MIGRATED TO SHADCN SIDEBAR - Old header and sidebar styles removed
+ * - Header now uses shadcn block pattern with sticky positioning
+ * - Sidebar now uses shadcn Sidebar component with SidebarProvider
+ * - Content area now uses SidebarInset with responsive padding
+ */
 
 .main-content {
   display: flex;
   flex: 1;
   overflow: hidden;
-}
-
-.sidebar {
-  width: 280px;
-  background: #1a1a1a;
-  border-right: 1px solid #444;
-  overflow-y: auto;
 }
 
 .content-area {

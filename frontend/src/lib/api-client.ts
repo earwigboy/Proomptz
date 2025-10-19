@@ -14,7 +14,7 @@ import { TemplatesService } from './api/services/TemplatesService';
 import { FoldersService } from './api/services/FoldersService';
 
 // Configure the API base URL
-OpenAPI.BASE = 'http://localhost:5026';
+OpenAPI.BASE = 'http://localhost:5000';
 
 // Re-export all types from the generated API
 export type {

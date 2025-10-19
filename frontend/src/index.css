@@ -24,28 +24,57 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 0 0% 10%;          /* #1a1a1a */
-    --foreground: 0 0% 95%;          /* ~rgba(255,255,255,0.87) */
-    --card: 0 0% 14%;                /* #242424 */
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 14%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 232 79% 65%;          /* #646cff */
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 20%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 27%;              /* #444 */
-    --input: 0 0% 27%;
-    --ring: 232 79% 65%;
+    /* Background & Surface Colors */
+    --background: 224 71% 4%;           /* Deep blue-black #060913 */
+    --foreground: 213 31% 91%;          /* Light blue-white text */
+    --card: 224 71% 4%;                 /* Card background */
+    --card-foreground: 213 31% 91%;     /* Card text */
+    --popover: 224 71% 4%;              /* Popover background */
+    --popover-foreground: 215 20.2% 65.1%; /* Popover text */
+
+    /* Primary Colors (Vibrant Blue) */
+    --primary: 221.2 83.2% 53.3%;       /* Vibrant blue #1e5efa */
+    --primary-foreground: 210 40% 98%;  /* Almost white */
+
+    /* Secondary & Accent */
+    --secondary: 210 40% 96.1%;         /* Light blue-gray */
+    --secondary-foreground: 222.2 47.4% 11.2%; /* Dark blue */
+    --accent: 210 40% 96.1%;            /* Light blue accent */
+    --accent-foreground: 222.2 47.4% 11.2%; /* Dark blue */
+
+    /* Interactive Elements */
+    --muted: 223 47% 11%;               /* Muted background #0f1419 */
+    --muted-foreground: 215.4 16.3% 56.9%; /* Muted text */
+
+    /* Borders & Inputs */
+    --border: 216 34% 17%;              /* Subtle blue border #1c2433 */
+    --input: 216 34% 17%;               /* Input border */
+    --ring: 215 20.2% 65.1%;            /* Focus ring */
+
+    /* Semantic Colors */
+    --destructive: 0 100% 50%;          /* Red for errors #ff0000 */
+    --destructive-foreground: 210 40% 98%; /* White text */
+
+    /* Sidebar (Blue Theme) */
+    --sidebar-background: 224 71% 4%;
+    --sidebar-foreground: 213 31% 91%;
+    --sidebar-primary: 221.2 83.2% 53.3%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 223 47% 11%;
+    --sidebar-accent-foreground: 213 31% 91%;
+    --sidebar-border: 216 34% 17%;
+    --sidebar-ring: 215 20.2% 65.1%;
   }
 }
 
