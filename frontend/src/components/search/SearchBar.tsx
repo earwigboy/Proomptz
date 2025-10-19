@@ -1,3 +1,7 @@
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Search, X } from 'lucide-react';
+
 interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
@@ -5,13 +9,21 @@ interface SearchBarProps {
   isSearching?: boolean;
 }
 
-export default function SearchBar({ value, onChange, placeholder = 'Search templates...', isSearching = false }: SearchBarProps) {
+export default function SearchBar({
+  value,
+  onChange,
+  placeholder = 'Search templates...',
+  isSearching = false
+}: SearchBarProps) {
   return (
-    <div className="search-bar" style={{ position: 'relative', width: '100%' }} role="search">
-      <label htmlFor="template-search" style={{ position: 'absolute', left: '-10000px' }}>
+    <div className="relative w-full" role="search">
+      <label htmlFor="template-search" className="sr-only">
         Search templates
       </label>
-      <input
+
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+
+      <Input
         id="template-search"
         type="search"
         value={value}
@@ -19,49 +31,26 @@ export default function SearchBar({ value, onChange, placeholder = 'Search templ
         placeholder={placeholder}
         aria-label="Search templates by name or content"
         aria-busy={isSearching}
-        style={{
-          width: '100%',
-          padding: '0.75rem 2.5rem 0.75rem 1rem',
-          fontSize: '1rem',
-          border: '1px solid #444',
-          borderRadius: '8px',
-          background: '#1a1a1a',
-          color: 'rgba(255, 255, 255, 0.87)',
-        }}
+        className="pl-9 pr-9"
       />
+
       {isSearching && (
-        <div
-          style={{
-            position: 'absolute',
-            right: '1rem',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            color: '#646cff',
-          }}
-        >
-          <span>Searching...</span>
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+          Searching...
         </div>
       )}
+
       {!isSearching && value && (
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => onChange('')}
-          style={{
-            position: 'absolute',
-            right: '1rem',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            background: 'transparent',
-            border: 'none',
-            color: '#888',
-            cursor: 'pointer',
-            fontSize: '1.5rem',
-            padding: 0,
-          }}
+          className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
           aria-label="Clear search input"
           title="Clear search"
         >
-          ×
-        </button>
+          <X className="h-4 w-4" />
+        </Button>
       )}
     </div>
   );

@@ -11,7 +11,8 @@ interface FolderContextMenuProps {
 }
 
 export default function FolderContextMenu({
-  folderId,
+  // folderId is required for prop type but not used in this component
+  folderId: _folderId,
   position,
   onRename,
   onCreateSubfolder,

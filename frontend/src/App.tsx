@@ -1,16 +1,20 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import TemplateList from './components/TemplateList';
 import TemplateForm from './components/TemplateForm';
-import TemplateUsage from './pages/TemplateUsage';
-import Search from './pages/Search';
+
+// Lazy load pages for code splitting
+const TemplateUsage = lazy(() => import('./pages/TemplateUsage'));
+const Search = lazy(() => import('./pages/Search'));
 import FolderTree from './components/folders/FolderTree';
 import FolderDialog from './components/folders/FolderDialog';
 import FolderContextMenu from './components/folders/FolderContextMenu';
 import { useFolders } from './lib/hooks/useFolders';
 import { templatesApi } from './lib/api-client';
 import type { Template, Folder } from './lib/api-client';
+import { Toaster } from '@/components/ui/sonner';
 import './App.css';
 
 function HomePage() {
@@ -41,9 +45,11 @@ function HomePage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['templates'] });
       queryClient.invalidateQueries({ queryKey: ['folders'] });
+      toast.success('Template moved successfully');
     },
     onError: (error: any) => {
-      alert(error.response?.data?.message || 'Failed to move template');
+      const errorMessage = error.response?.data?.message || 'Failed to move template';
+      toast.error(errorMessage);
     },
   });
 
@@ -85,16 +91,18 @@ function HomePage() {
           if (selectedFolderId === folderId) {
             setSelectedFolderId(null);
           }
+          toast.success('Folder deleted successfully');
         },
         onError: (error: any) => {
-          alert(error.response?.data?.message || 'Failed to delete folder');
+          const errorMessage = error.response?.data?.message || 'Failed to delete folder';
+          toast.error(errorMessage);
         },
       });
     }
   };
 
   const handleSaveFolder = (name: string, parentFolderId: string | null) => {
-    if (editingFolder) {
+    if (editingFolder && editingFolder.id) {
       updateFolder.mutate(
         {
           id: editingFolder.id,
@@ -105,9 +113,11 @@ function HomePage() {
             setShowFolderDialog(false);
             setEditingFolder(null);
             setNewFolderParentId(null);
+            toast.success('Folder renamed successfully');
           },
           onError: (error: any) => {
-            alert(error.response?.data?.message || 'Failed to update folder');
+            const errorMessage = error.response?.data?.message || 'Failed to update folder';
+            toast.error(errorMessage);
           },
         }
       );
@@ -119,9 +129,11 @@ function HomePage() {
             setShowFolderDialog(false);
             setEditingFolder(null);
             setNewFolderParentId(null);
+            toast.success('Folder created successfully');
           },
           onError: (error: any) => {
-            alert(error.response?.data?.message || 'Failed to create folder');
+            const errorMessage = error.response?.data?.message || 'Failed to create folder';
+            toast.error(errorMessage);
           },
         }
       );
@@ -145,7 +157,7 @@ function HomePage() {
       </header>
       <div className="main-content">
         <aside className="sidebar" role="complementary" aria-label="Folder navigation">
-          {folderTree && (
+          {folderTree && folderTree.rootFolders && (
             <FolderTree
               folders={folderTree.rootFolders}
               selectedFolderId={selectedFolderId}
@@ -224,14 +236,25 @@ function HomePage() {
   );
 }
 
+function LoadingFallback() {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-muted-foreground">Loading...</div>
+    </div>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/use/:id" element={<TemplateUsage />} />
-      </Routes>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/use/:id" element={<TemplateUsage />} />
+        </Routes>
+      </Suspense>
+      <Toaster />
     </BrowserRouter>
   );
 }

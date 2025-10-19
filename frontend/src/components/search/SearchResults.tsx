@@ -1,5 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import type { TemplateSummary } from '../../lib/api-client';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Folder } from 'lucide-react';
 
 interface SearchResultsProps {
   results: TemplateSummary[];
@@ -7,51 +18,73 @@ interface SearchResultsProps {
   query: string;
 }
 
+function SearchResultSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <Skeleton className="h-6 w-3/4" />
+        <Skeleton className="h-4 w-1/2 mt-2" />
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-2/3" />
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-9 w-28" />
+      </CardFooter>
+    </Card>
+  );
+}
+
 export default function SearchResults({ results, isLoading, query }: SearchResultsProps) {
   const navigate = useNavigate();
 
   if (isLoading) {
-    return <div className="loading">Searching...</div>;
+    return (
+      <div className="search-results">
+        <div className="text-muted-foreground mb-4" role="status" aria-live="polite">
+          Searching...
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" role="list">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SearchResultSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (!query) {
     return (
-      <div style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>
-        <p>Enter a search query to find templates</p>
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">Enter a search query to find templates</p>
       </div>
     );
   }
 
   if (results.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>
-        <p>No templates found for "{query}"</p>
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">No templates found for "{query}"</p>
       </div>
     );
   }
 
   return (
     <div className="search-results">
-      <div style={{ marginBottom: '1rem', color: '#888' }} role="status" aria-live="polite">
+      <div className="text-muted-foreground mb-4" role="status" aria-live="polite">
         <p>Found {results.length} result{results.length !== 1 ? 's' : ''} for "{query}"</p>
       </div>
 
-      <div className="templates-grid" style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '1.5rem'
-      }} role="list" aria-label="Search results">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" role="list" aria-label="Search results">
         {results.map((template) => (
-          <div
+          <Card
             key={template.id}
-            className="template-card"
-            style={{
-              background: '#1a1a1a',
-              border: '1px solid #444',
-              borderRadius: '8px',
-              padding: '1.5rem',
-              cursor: 'pointer',
-            }}
+            className="cursor-pointer transition-colors hover:border-primary/50"
             onClick={() => navigate(`/use/${template.id}`)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -63,47 +96,39 @@ export default function SearchResults({ results, isLoading, query }: SearchResul
             role="listitem"
             aria-label={`Template: ${template.name}`}
           >
-            <div className="template-header">
-              <h3>{template.name}</h3>
+            <CardHeader>
+              <CardTitle className="text-lg">{template.name}</CardTitle>
               {template.folderName && (
-                <div style={{ fontSize: '0.875rem', color: '#888', marginTop: '0.25rem' }}>
-                  📁 {template.folderName}
+                <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                  <Folder className="h-3 w-3" />
+                  <span>{template.folderName}</span>
                 </div>
               )}
-            </div>
+            </CardHeader>
 
-            <div className="template-preview" style={{
-              marginTop: '1rem',
-              fontSize: '0.875rem',
-              color: '#aaa',
-              lineHeight: '1.5',
-            }}>
-              {template.contentPreview}
-              {template.contentPreview && template.contentPreview.length >= 200 && '...'}
-            </div>
+            <CardContent>
+              <CardDescription className="line-clamp-3">
+                {template.contentPreview}
+                {template.contentPreview && template.contentPreview.length >= 200 && '...'}
+              </CardDescription>
+            </CardContent>
 
-            <div className="template-footer" style={{
-              marginTop: '1rem',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-              <div style={{ fontSize: '0.75rem', color: '#666' }}>
+            <CardFooter className="flex justify-between items-center">
+              <div className="text-xs text-muted-foreground">
                 Updated: {new Date(template.updatedAt || '').toLocaleDateString()}
               </div>
-              <button
+              <Button
+                size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   navigate(`/use/${template.id}`);
                 }}
-                className="btn-create"
-                style={{ fontSize: '0.875rem', padding: '0.375rem 0.75rem' }}
                 aria-label={`Use template ${template.name}`}
               >
                 Use Template
-              </button>
-            </div>
-          </div>
+              </Button>
+            </CardFooter>
+          </Card>
         ))}
       </div>
     </div>

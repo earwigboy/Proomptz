@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react';
 import type { Folder } from '../../lib/api-client';
-import './FolderDialog.css';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 interface FolderDialogProps {
   folder: Folder | null;
@@ -19,23 +28,20 @@ export default function FolderDialog({
 }: FolderDialogProps) {
   const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [open, setOpen] = useState(true);
 
   useEffect(() => {
     if (folder) {
-      setName(folder.name);
+      setName(folder.name ?? '');
     }
   }, [folder]);
 
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !isLoading) {
-        onClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [onClose, isLoading]);
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen && !isLoading) {
+      setOpen(false);
+      onClose();
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,53 +70,50 @@ export default function FolderDialog({
   };
 
   return (
-    <div
-      className="folder-dialog-overlay"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="folder-dialog-title"
-    >
-      <div className="folder-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="dialog-header">
-          <h2 id="folder-dialog-title">{folder ? 'Rename Folder' : 'Create New Folder'}</h2>
-          <button
-            onClick={onClose}
-            className="btn-close"
-            disabled={isLoading}
-            aria-label="Close dialog"
-          >
-            ✕
-          </button>
-        </div>
-
-        {error && <div className="error-message">{error}</div>}
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{folder ? 'Rename Folder' : 'Create New Folder'}</DialogTitle>
+        </DialogHeader>
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="folderName">Folder Name</label>
-            <input
-              id="folderName"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter folder name"
-              autoFocus
-              disabled={isLoading}
-              required
-            />
+          <div className="grid gap-4 py-4">
+            {error && (
+              <div className="text-sm text-destructive">
+                {error}
+              </div>
+            )}
+
+            <div className="grid gap-2">
+              <Label htmlFor="folderName">Folder Name</Label>
+              <Input
+                id="folderName"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter folder name"
+                autoFocus
+                disabled={isLoading}
+                required
+              />
+            </div>
           </div>
 
-          <div className="dialog-actions">
-            <button type="button" onClick={onClose} className="btn-cancel" disabled={isLoading}>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isLoading}
+            >
               Cancel
-            </button>
-            <button type="submit" className="btn-submit" disabled={isLoading}>
+            </Button>
+            <Button type="submit" disabled={isLoading}>
               {isLoading ? 'Saving...' : folder ? 'Rename' : 'Create'}
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { FolderTreeNode } from '../../lib/api-client';
-import './FolderTree.css';
+import { Button } from '@/components/ui/button';
+import { ChevronDown, ChevronRight, Folder, FolderOpen, Plus } from 'lucide-react';
 
 interface FolderTreeProps {
   folders: FolderTreeNode[];
@@ -31,21 +32,30 @@ function FolderTreeItem({
   const [isExpanded, setIsExpanded] = useState(true);
   const [isDragOver, setIsDragOver] = useState(false);
   const hasChildren = folder.childFolders && folder.childFolders.length > 0;
+  const folderId = folder.id ?? '';
+  const folderName = folder.name ?? 'Unnamed';
+  const templateCount = folder.templateCount ?? 0;
+  const isSelected = selectedFolderId === folderId;
 
   return (
-    <div className="folder-tree-item" role="treeitem" aria-expanded={hasChildren ? isExpanded : undefined}>
+    <div role="treeitem" aria-expanded={hasChildren ? isExpanded : undefined}>
       <div
-        className={`folder-item ${selectedFolderId === folder.id ? 'selected' : ''} ${isDragOver ? 'drag-over' : ''}`}
+        className={`
+          flex items-center gap-1 py-1 px-2 rounded cursor-pointer
+          hover:bg-accent transition-colors
+          ${isSelected ? 'bg-accent text-accent-foreground' : ''}
+          ${isDragOver ? 'bg-primary/20' : ''}
+        `}
         style={{ paddingLeft: `${level * 20 + 8}px` }}
-        onClick={() => onFolderSelect(folder.id)}
+        onClick={() => onFolderSelect(folderId)}
         onContextMenu={(e) => {
           e.preventDefault();
-          onFolderContextMenu(folder.id, e);
+          onFolderContextMenu(folderId, e);
         }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            onFolderSelect(folder.id);
+            onFolderSelect(folderId);
           } else if (e.key === 'ArrowRight' && hasChildren && !isExpanded) {
             e.preventDefault();
             setIsExpanded(true);
@@ -56,8 +66,8 @@ function FolderTreeItem({
         }}
         tabIndex={0}
         role="button"
-        aria-label={`Folder: ${folder.name}, ${folder.templateCount} templates`}
-        aria-selected={selectedFolderId === folder.id}
+        aria-label={`Folder: ${folderName}, ${templateCount} templates`}
+        aria-selected={isSelected}
         onDragOver={(e) => {
           e.preventDefault();
           e.dataTransfer.dropEffect = 'move';
@@ -71,20 +81,20 @@ function FolderTreeItem({
           setIsDragOver(false);
           const templateId = e.dataTransfer.getData('templateId');
           if (templateId && onTemplateDrop) {
-            onTemplateDrop(templateId, folder.id);
+            onTemplateDrop(templateId, folderId);
           }
         }}
       >
-        {hasChildren && (
-          <span
-            className="folder-toggle"
+        {hasChildren ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-5 w-5 p-0 hover:bg-transparent"
             onClick={(e) => {
               e.stopPropagation();
               setIsExpanded(!isExpanded);
             }}
-            role="button"
             aria-label={isExpanded ? 'Collapse folder' : 'Expand folder'}
-            tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -93,19 +103,32 @@ function FolderTreeItem({
               }
             }}
           >
-            {isExpanded ? '▼' : '▶'}
-          </span>
+            {isExpanded ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )}
+          </Button>
+        ) : (
+          <span className="w-5" />
         )}
-        {!hasChildren && <span className="folder-toggle-placeholder"></span>}
-        <span className="folder-icon" aria-hidden="true">📁</span>
-        <span className="folder-name">{folder.name}</span>
-        <span className="folder-count" aria-label={`${folder.templateCount} templates`}>
-          ({folder.templateCount})
+
+        {isExpanded ? (
+          <FolderOpen className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+        ) : (
+          <Folder className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+        )}
+
+        <span className="flex-1 truncate text-sm">{folderName}</span>
+
+        <span className="text-xs text-muted-foreground" aria-label={`${templateCount} templates`}>
+          ({templateCount})
         </span>
       </div>
+
       {isExpanded && hasChildren && (
-        <div className="folder-children">
-          {folder.childFolders.map((child) => (
+        <div>
+          {folder.childFolders?.map((child) => (
             <FolderTreeItem
               key={child.id}
               folder={child}
@@ -132,23 +155,32 @@ export default function FolderTree({
   onTemplateDrop,
 }: FolderTreeProps) {
   const [isDragOverRoot, setIsDragOverRoot] = useState(false);
+  const isRootSelected = selectedFolderId === null;
 
   return (
-    <div className="folder-tree">
-      <div className="folder-tree-header">
-        <h3>Folders</h3>
-        <button
+    <div className="p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold">Folders</h3>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 w-7 p-0"
           onClick={() => onCreateSubfolder('')}
-          className="btn-new-folder"
           title="Create root folder"
           aria-label="Create new root folder"
         >
-          +
-        </button>
+          <Plus className="h-4 w-4" />
+        </Button>
       </div>
+
       <nav role="tree" aria-label="Folder navigation">
         <div
-          className={`folder-item ${selectedFolderId === null ? 'selected' : ''} ${isDragOverRoot ? 'drag-over' : ''}`}
+          className={`
+            flex items-center gap-2 py-1 px-2 rounded cursor-pointer mb-2
+            hover:bg-accent transition-colors
+            ${isRootSelected ? 'bg-accent text-accent-foreground' : ''}
+            ${isDragOverRoot ? 'bg-primary/20' : ''}
+          `}
           onClick={() => onFolderSelect(null)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -159,27 +191,28 @@ export default function FolderTree({
           tabIndex={0}
           role="treeitem"
           aria-label="All Templates root folder"
-          aria-selected={selectedFolderId === null}
-        onDragOver={(e) => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'move';
-          setIsDragOverRoot(true);
-        }}
-        onDragLeave={() => {
-          setIsDragOverRoot(false);
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-          setIsDragOverRoot(false);
-          const templateId = e.dataTransfer.getData('templateId');
-          if (templateId && onTemplateDrop) {
-            onTemplateDrop(templateId, null);
-          }
-        }}
+          aria-selected={isRootSelected}
+          onDragOver={(e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            setIsDragOverRoot(true);
+          }}
+          onDragLeave={() => {
+            setIsDragOverRoot(false);
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            setIsDragOverRoot(false);
+            const templateId = e.dataTransfer.getData('templateId');
+            if (templateId && onTemplateDrop) {
+              onTemplateDrop(templateId, null);
+            }
+          }}
         >
-          <span className="folder-icon" aria-hidden="true">📂</span>
-          <span className="folder-name">All Templates</span>
+          <FolderOpen className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          <span className="text-sm font-medium">All Templates</span>
         </div>
+
         {folders.map((folder) => (
           <FolderTreeItem
             key={folder.id}
