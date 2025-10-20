@@ -3,14 +3,22 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { TemplatesService } from '../lib/api/services/TemplatesService';
 import { usePlaceholders } from '../lib/hooks/usePlaceholders';
+import { useFormValidation } from '../lib/hooks/useFormValidation';
+import { useTemplateEditor } from '../lib/hooks/useTemplateEditor';
 import PlaceholderForm from '../components/placeholders/PlaceholderForm';
 import PromptPreview from '../components/placeholders/PromptPreview';
+import TemplateEditor from '../components/template/TemplateEditor';
+import { Button } from '../components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../components/ui/tooltip';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Badge } from '../components/ui/badge';
 
 export default function TemplateUsage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'preview' | 'edit'>('preview');
 
   const { data: template, isLoading } = useQuery({
     queryKey: ['template', id],
@@ -18,15 +26,29 @@ export default function TemplateUsage() {
     enabled: !!id,
   });
 
-  const { placeholders, values, updateValue, allFilled } = usePlaceholders(
-    template?.content || ''
-  );
+  const {
+    placeholders,
+    placeholderValues,
+    updatePlaceholder,
+    touchPlaceholder,
+  } = usePlaceholders(template?.content || '');
+
+  // T016: Integrate useFormValidation hook to compute canSubmit state
+  const { canSubmit, validationMessage, missingPlaceholders } = useFormValidation(placeholders);
+
+  // T032: Integrate useTemplateEditor hook
+  const {
+    finalContent,
+    hasEdits,
+    setEditedContent,
+    resetEdits,
+  } = useTemplateEditor(template?.content || '', placeholderValues);
 
   const sendMutation = useMutation({
     mutationFn: () =>
       TemplatesService.postApiTemplatesSend({
         id: id!,
-        requestBody: { placeholderValues: values },
+        requestBody: { placeholderValues },
       }),
     onSuccess: (response) => {
       setSuccess(response.message || 'Prompt sent successfully!');
@@ -47,8 +69,8 @@ export default function TemplateUsage() {
   }
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem' }}>
+    <div className="h-full flex flex-col" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
+      <div className="flex-shrink-0" style={{ marginBottom: '2rem' }}>
         <button
           onClick={() => navigate('/')}
           style={{ marginBottom: '1rem' }}
@@ -60,12 +82,13 @@ export default function TemplateUsage() {
       </div>
 
       {error && (
-        <div className="error-message" role="alert" aria-live="assertive">
+        <div className="error-message flex-shrink-0" role="alert" aria-live="assertive">
           {error}
         </div>
       )}
       {success && (
         <div
+          className="flex-shrink-0"
           style={{
             padding: '1rem',
             background: '#10b98133',
@@ -81,37 +104,108 @@ export default function TemplateUsage() {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-        <div>
+      <div className="flex-1 flex" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', minHeight: 0 }}>
+        {/* T042: PlaceholderForm section with flex-shrink-0 (fixed height) */}
+        <div className="flex-shrink-0">
           <PlaceholderForm
             placeholders={placeholders}
-            values={values}
-            onValueChange={updateValue}
+            onPlaceholderChange={updatePlaceholder}
+            onPlaceholderBlur={touchPlaceholder}
+            disabled={sendMutation.isPending}
           />
         </div>
 
-        <div>
-          <PromptPreview templateContent={template.content || ''} placeholderValues={values} />
+        {/* T041 & T043: Tabs section with flex-1 (takes remaining space) and flex flex-col */}
+        <div className="flex flex-col h-full">
+          {/* T027-T031: Tabs component with Preview/Edit */}
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as 'preview' | 'edit')}
+            className="flex-1 flex flex-col"
+          >
+            <TabsList className="mb-4 flex-shrink-0">
+              <TabsTrigger value="preview">Preview</TabsTrigger>
+              <TabsTrigger value="edit">
+                Edit
+                {/* T031: Edited badge when hasEdits is true */}
+                {hasEdits && (
+                  <Badge variant="secondary" className="ml-2">
+                    Edited
+                  </Badge>
+                )}
+              </TabsTrigger>
+            </TabsList>
 
-          <div style={{ marginTop: '2rem' }}>
-            <button
-              onClick={() => sendMutation.mutate()}
-              disabled={!allFilled || sendMutation.isPending}
-              className="btn-submit"
-              style={{ width: '100%' }}
-              aria-label="Send prompt to Devin"
-              aria-busy={sendMutation.isPending}
-              aria-disabled={!allFilled}
-            >
-              {sendMutation.isPending ? 'Sending...' : 'Send to Devin'}
-            </button>
-            {!allFilled && placeholders.length > 0 && (
+            {/* T029: Preview tab content */}
+            <TabsContent value="preview" className="flex-1 flex flex-col">
+              {/* T045: Pass className="flex-1" to PromptPreview */}
+              {/* Preview shows the finalContent (resolved OR edited) */}
+              <PromptPreview
+                templateContent={template.content || ''}
+                placeholderValues={placeholderValues}
+                className="flex-1"
+                hasEdits={hasEdits}
+              />
+            </TabsContent>
+
+            {/* T030: Edit tab content */}
+            <TabsContent value="edit" className="flex-1 flex flex-col">
+              {/* T033: Pass finalContent to TemplateEditor */}
+              {/* T034: Wire setEditedContent callback */}
+              {/* T035: Wire resetEdits callback */}
+              <TemplateEditor
+                content={finalContent}
+                onContentChange={setEditedContent}
+                hasEdits={hasEdits}
+                onReset={resetEdits}
+                disabled={sendMutation.isPending}
+              />
+            </TabsContent>
+          </Tabs>
+
+          {/* T044: Send button section with flex-shrink-0 (fixed height) */}
+          <div className="flex-shrink-0" style={{ marginTop: '2rem' }}>
+            {/* T018-T022: Tooltip wrapper with validation feedback and accessibility */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {/* T017: Button with canSubmit state, T022: shadcn/ui Button with disabled styling */}
+                  <Button
+                    onClick={() => sendMutation.mutate()}
+                    disabled={!canSubmit || sendMutation.isPending}
+                    className="w-full"
+                    size="lg"
+                    aria-busy={sendMutation.isPending}
+                    aria-describedby={!canSubmit ? 'send-button-status' : undefined}
+                  >
+                    {sendMutation.isPending ? 'Sending...' : 'Send to Devin'}
+                  </Button>
+                </TooltipTrigger>
+                {/* T019: Tooltip content shows validationMessage when disabled */}
+                <TooltipContent>
+                  <p>{validationMessage ?? 'Send template to Devin'}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            {/* T021: Screen reader status message with aria-live */}
+            {!canSubmit && (
               <p
-                style={{ color: '#888', fontSize: '0.875rem', marginTop: '0.5rem' }}
-                role="status"
+                id="send-button-status"
+                className="text-sm text-muted-foreground mt-2 sr-only"
                 aria-live="polite"
               >
-                Please fill all placeholders to send
+                Button disabled: {missingPlaceholders.length} placeholder(s) required
+              </p>
+            )}
+
+            {/* Visual feedback for sighted users */}
+            {!canSubmit && placeholders.length > 0 && (
+              <p
+                className="text-sm text-muted-foreground mt-2 text-center"
+                role="status"
+              >
+                Please fill all required placeholders to send
               </p>
             )}
           </div>
