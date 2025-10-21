@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { TemplatesService } from '../lib/api/services/TemplatesService';
 import { usePlaceholders } from '../lib/hooks/usePlaceholders';
@@ -16,6 +16,7 @@ import { Badge } from '../components/ui/badge';
 export default function TemplateUsage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'preview' | 'edit'>('preview');
@@ -72,7 +73,10 @@ export default function TemplateUsage() {
     <div className="h-full flex flex-col" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
       <div className="flex-shrink-0" style={{ marginBottom: '2rem' }}>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => {
+            const params = searchParams.toString();
+            navigate(`/${params ? `?${params}` : ''}`);
+          }}
           style={{ marginBottom: '1rem' }}
           aria-label="Go back to templates list"
         >
@@ -104,9 +108,22 @@ export default function TemplateUsage() {
         </div>
       )}
 
-      <div className="flex-1 flex" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', minHeight: 0 }}>
-        {/* T042: PlaceholderForm section with flex-shrink-0 (fixed height) */}
-        <div className="flex-shrink-0">
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'calc(50% - 1rem) calc(50% - 1rem)',
+        gap: '2rem',
+        minHeight: 0,
+        width: '100%',
+        overflow: 'hidden'
+      }}>
+        {/* Placeholder form section with CSS containment to prevent layout shifts */}
+        <div style={{
+          minWidth: 0,
+          maxWidth: '100%',
+          width: '100%',
+          overflow: 'auto',
+          contain: 'layout size'
+        }}>
           <PlaceholderForm
             placeholders={placeholders}
             onPlaceholderChange={updatePlaceholder}
@@ -116,7 +133,13 @@ export default function TemplateUsage() {
         </div>
 
         {/* T041 & T043: Tabs section with flex-1 (takes remaining space) and flex flex-col */}
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col" style={{
+          minWidth: 0,
+          maxWidth: '100%',
+          width: '100%',
+          minHeight: 0,
+          overflow: 'hidden'
+        }}>
           {/* T027-T031: Tabs component with Preview/Edit */}
           <Tabs
             value={activeTab}

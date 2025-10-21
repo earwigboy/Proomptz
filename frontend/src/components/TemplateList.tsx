@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { templatesApi } from '../lib/api-client';
 import type { Template } from '../lib/api-client';
@@ -65,6 +65,7 @@ function TemplateCardSkeleton() {
 export default function TemplateList({ onEdit, onCreate, selectedFolderId }: TemplateListProps) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loadingTemplateId, setLoadingTemplateId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [templateToDelete, setTemplateToDelete] = useState<{ id: string; name: string } | null>(null);
@@ -120,7 +121,10 @@ export default function TemplateList({ onEdit, onCreate, selectedFolderId }: Tem
           <div className="flex gap-4">
             <Button
               variant="outline"
-              onClick={() => navigate('/search')}
+              onClick={() => {
+                const params = searchParams.toString();
+                navigate(`/search${params ? `?${params}` : ''}`);
+              }}
               aria-label="Search templates"
             >
               🔍 Search
@@ -162,7 +166,10 @@ export default function TemplateList({ onEdit, onCreate, selectedFolderId }: Tem
         <div className="flex gap-4">
           <Button
             variant="outline"
-            onClick={() => navigate('/search')}
+            onClick={() => {
+              const params = searchParams.toString();
+              navigate(`/search${params ? `?${params}` : ''}`);
+            }}
             aria-label="Search templates"
           >
             🔍 Search
@@ -220,7 +227,10 @@ export default function TemplateList({ onEdit, onCreate, selectedFolderId }: Tem
                 <div className="flex gap-2 w-full" role="group" aria-label="Template actions">
                   <Button
                     size="sm"
-                    onClick={() => navigate(`/use/${template.id ?? ''}`)}
+                    onClick={() => {
+                      const params = searchParams.toString();
+                      navigate(`/use/${template.id ?? ''}${params ? `?${params}` : ''}`);
+                    }}
                     aria-label={`Use template ${template.name}`}
                   >
                     Use

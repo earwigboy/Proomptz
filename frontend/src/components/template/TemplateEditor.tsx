@@ -47,15 +47,21 @@ export default function TemplateEditor({
         )}
       </div>
 
-      {/* T023: Textarea for content editing */}
-      {/* T025: Monospace font and responsive min-height */}
-      {/* T026: aria-label for accessibility */}
+      {/* T004-T006: Enhanced textarea with performance optimizations */}
+      {/* T004: minHeight 500px for 30+ visible lines */}
+      {/* T005: Performance optimizations (spellCheck, autoComplete, etc.) */}
+      {/* T006: Monospace font for improved rendering */}
       <Textarea
         value={content}
         onChange={(e) => onContentChange(e.target.value)}
         disabled={disabled}
+        spellCheck="false"
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
         aria-label="Edit template content"
-        className="flex-1 min-h-[300px] md:min-h-[400px] font-mono text-sm resize-y"
+        className="flex-1 min-h-[500px] font-mono text-sm resize-y"
+        style={{ resize: 'vertical' }}
         placeholder="Edit your template content here..."
       />
 

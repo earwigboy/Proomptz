@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSearch } from '../lib/hooks/useSearch';
 import SearchBar from '../components/search/SearchBar';
 import SearchResults from '../components/search/SearchResults';
@@ -8,6 +8,7 @@ export default function Search() {
   const [query, setQuery] = useState('');
   const [page] = useState(1);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const { results, isLoading, isSearching } = useSearch(query, page);
 
@@ -15,7 +16,10 @@ export default function Search() {
     <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
       <div style={{ marginBottom: '2rem' }}>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => {
+            const params = searchParams.toString();
+            navigate(`/${params ? `?${params}` : ''}`);
+          }}
           style={{
             marginBottom: '1rem',
             background: 'transparent',

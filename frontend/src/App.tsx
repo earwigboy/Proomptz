@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import TemplateList from './components/TemplateList';
 import TemplateForm from './components/TemplateForm';
+import { useSelectedFolder } from './lib/hooks/useSelectedFolder';
 
 // Lazy load pages for code splitting
 const TemplateUsage = lazy(() => import('./pages/TemplateUsage'));
@@ -43,7 +44,7 @@ function HomePage() {
   const queryClient = useQueryClient();
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const { selectedFolderId, setSelectedFolder } = useSelectedFolder();
   const [showFolderDialog, setShowFolderDialog] = useState(false);
   const [editingFolder, setEditingFolder] = useState<Folder | null>(null);
   const [newFolderParentId, setNewFolderParentId] = useState<string | null>(null);
@@ -91,7 +92,7 @@ function HomePage() {
   };
 
   const handleFolderSelect = (folderId: string | null) => {
-    setSelectedFolderId(folderId);
+    setSelectedFolder(folderId);
   };
 
   const handleCreateFolder = (parentId: string) => {
@@ -111,7 +112,7 @@ function HomePage() {
       deleteFolder.mutate(folderId, {
         onSuccess: () => {
           if (selectedFolderId === folderId) {
-            setSelectedFolderId(null);
+            setSelectedFolder(null);
           }
           toast.success('Folder deleted successfully');
         },

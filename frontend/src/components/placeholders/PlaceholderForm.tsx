@@ -57,7 +57,7 @@ export default function PlaceholderForm({
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-4 ${className}`} style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
       <h3 className="text-lg font-semibold" id="placeholder-form-heading">
         Fill Placeholder Values
       </h3>
@@ -66,6 +66,7 @@ export default function PlaceholderForm({
         className="space-y-4"
         aria-labelledby="placeholder-form-heading"
         onSubmit={(e) => e.preventDefault()}
+        style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}
       >
         {placeholders.map((placeholder) => {
           const useTextarea = shouldUseTextarea(placeholder);
@@ -74,7 +75,7 @@ export default function PlaceholderForm({
           const hasError = placeholder.touched && placeholder.error;
 
           return (
-            <div key={placeholder.name} className="space-y-2">
+            <div key={placeholder.name} className="space-y-2" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
               {/* Label with required indicator */}
               <Label htmlFor={inputId}>
                 {placeholder.displayName || placeholder.name.replace(/_/g, ' ')}
@@ -98,6 +99,7 @@ export default function PlaceholderForm({
                   aria-describedby={hasError ? errorId : undefined}
                   placeholder={`Enter ${placeholder.displayName || placeholder.name.replace(/_/g, ' ')}...`}
                   className="min-h-[100px] resize-y"
+                  style={{ maxWidth: '100%', width: '100%', minWidth: 0, boxSizing: 'border-box' }}
                 />
               ) : (
                 <Input
@@ -111,6 +113,7 @@ export default function PlaceholderForm({
                   aria-invalid={hasError ? 'true' : 'false'}
                   aria-describedby={hasError ? errorId : undefined}
                   placeholder={`Enter ${placeholder.displayName || placeholder.name.replace(/_/g, ' ')}...`}
+                  style={{ maxWidth: '100%', width: '100%', minWidth: 0, boxSizing: 'border-box' }}
                 />
               )}
 
