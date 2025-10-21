@@ -70,7 +70,7 @@ export default function TemplateUsage() {
   }
 
   return (
-    <div className="h-full flex flex-col" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
+    <div className="h-full flex flex-col" style={{ padding: '2rem', paddingLeft: '3rem', paddingRight: '3rem' }}>
       <div className="flex-shrink-0" style={{ marginBottom: '2rem' }}>
         <button
           onClick={() => {
@@ -110,8 +110,8 @@ export default function TemplateUsage() {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'calc(50% - 1rem) calc(50% - 1rem)',
-        gap: '2rem',
+        gridTemplateColumns: '400px 1fr',
+        gap: '3rem',
         minHeight: 0,
         width: '100%',
         overflow: 'hidden'
