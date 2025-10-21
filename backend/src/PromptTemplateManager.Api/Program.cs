@@ -67,6 +67,14 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseResponseCompression();
 
+// In production (containerized), serve static files and SPA fallback
+// In development, CORS is used instead (frontend runs on separate Vite server)
+if (!app.Environment.IsDevelopment())
+{
+    // Serve static files from wwwroot (for containerized frontend)
+    app.UseStaticFiles();
+}
+
 app.UseCors();
 
 app.UseAuthorization();
@@ -75,6 +83,13 @@ app.MapControllers();
 
 // Map health check endpoint
 app.MapHealthChecks("/health");
+
+// In production, use SPA fallback routing to serve index.html for non-API routes
+// This allows React Router to handle client-side routing in the containerized app
+if (!app.Environment.IsDevelopment())
+{
+    app.MapFallbackToFile("index.html");
+}
 
 // Apply database migrations
 using (var scope = app.Services.CreateScope())

@@ -14,7 +14,11 @@ import { TemplatesService } from './api/services/TemplatesService';
 import { FoldersService } from './api/services/FoldersService';
 
 // Configure the API base URL
-OpenAPI.BASE = 'http://localhost:5000';
+// In production (containerized), the API is served from the same origin
+// In development, the API runs on a separate port (5026)
+OpenAPI.BASE = import.meta.env.DEV
+  ? 'http://localhost:5026'  // Development: Vite dev server -> separate backend
+  : window.location.origin;   // Production: Same origin (backend serves frontend)
 
 // Re-export all types from the generated API
 export type {

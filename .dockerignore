@@ -1,53 +1,96 @@
+# .dockerignore - Files to exclude from Docker build context
+
 # Git
 .git/
 .gitignore
 .gitattributes
 
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
 # Documentation
+README.md
+DOCKER.md
 *.md
 LICENSE
 docs/
-specs/
 
-# .NET
-bin/
-obj/
-*.user
-*.suo
-packages/
-*.cache
-TestResults/
+# CI/CD
+.github/
+.gitlab-ci.yml
+azure-pipelines.yml
 
-# Node.js
-node_modules/
-dist/
-build/
-npm-debug.log*
-
-# IDE
+# IDE and Editor files
 .vscode/
 .idea/
 *.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
 
-# Temporary
-*.tmp
-*.log
-.env*
+# .NET Backend build artifacts
+backend/**/bin/
+backend/**/obj/
+backend/**/*.user
+backend/**/*.suo
+backend/**/*.cache
+backend/**/*.log
+backend/**/[Dd]ebug/
+backend/**/[Rr]elease/
+backend/**/TestResults/
+backend/**/*.coverage
 
-# Test & coverage
-coverage/
-*.coverage
-
-# SQLite databases
+# Database files (will be volume mounted)
 *.db
-*.db-*
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
+data/
+
+# Frontend build artifacts (will be rebuilt in container)
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/pnpm-debug.log*
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/*.tsbuildinfo
+
+# Specification and planning files
+specs/
+.specify/
+.claude/
+.cursor/
+
+# Test files
+backend/**/*Tests/
+backend/**/test/
+frontend/src/**/*.test.ts
+frontend/src/**/*.test.tsx
+frontend/src/**/*.spec.ts
+frontend/src/**/*.spec.tsx
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.orig
+coverage/
+
+# Logs
+logs/
+*.log
 
 # OS files
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# Specify workflow
-.specify/

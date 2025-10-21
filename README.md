@@ -18,13 +18,46 @@ A web application for creating, organizing, and using markdown-based prompt temp
 
 ## Quick Start
 
-### Prerequisites
+### Option 1: Using Containers (Recommended)
 
-- .NET 9.0 SDK
-- Node.js 18+ and npm
-- Git
+**Prerequisites**: Docker or Podman
 
-### Installation
+This application supports both Docker and Podman. The provided scripts automatically detect which runtime is available.
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd proomptz
+```
+
+2. Start the application:
+
+**Using helper scripts (auto-detects Docker/Podman):**
+```bash
+./docker-build.sh  # Build the image
+./docker-run.sh    # Run the container
+```
+
+**Using Compose:**
+```bash
+# With Docker
+docker-compose up -d
+
+# With Podman (recommended on Fedora)
+podman compose up -d
+```
+
+The application will be available at `http://localhost:5026`
+
+**Note for Fedora users**: Podman is pre-installed and recommended. All Docker commands work with Podman by simply replacing `docker` with `podman`.
+
+**How it works**: In production mode, the ASP.NET Core backend serves both the API endpoints and the React frontend (built and placed in `wwwroot/`). This creates a single unified application. See [ARCHITECTURE.md](ARCHITECTURE.md) for details.
+
+See [DOCKER.md](DOCKER.md) for detailed container documentation, Podman-specific features, and configuration options.
+
+### Option 2: Local Development
+
+**Prerequisites**: .NET 9.0 SDK, Node.js 18+, npm, Git
 
 1. Clone the repository:
 ```bash

@@ -1,0 +1,71 @@
+# Docker Compose / Podman Compose configuration
+# Compatible with both Docker Compose and Podman Compose
+#
+# Usage:
+#   Docker:  docker-compose up -d
+#   Podman:  podman compose up -d
+
+version: '3.8'
+
+services:
+  # Main application (backend + frontend)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: proomptz-app
+    ports:
+      - "5026:5026"
+    volumes:
+      # Persist SQLite database
+      # Note: For Podman on Fedora/RHEL with SELinux, the :Z flag enables proper labeling
+      # - ./data:/app/data${SELINUX_FLAG:-}
+      - ./data:/app/data:Z
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/prompttemplates.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5026/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Development services (optional - for hot reload)
+  # Uncomment below if you want separate backend/frontend dev containers
+
+  # backend-dev:
+  #   image: mcr.microsoft.com/dotnet/sdk:9.0
+  #   container_name: proomptz-backend-dev
+  #   working_dir: /app
+  #   volumes:
+  #     - ./backend:/app
+  #     - ./data:/app/data
+  #   ports:
+  #     - "5026:5026"
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ConnectionStrings__DefaultConnection=Data Source=/app/data/prompttemplates.db
+  #     - ASPNETCORE_URLS=http://+:5026
+  #   command: dotnet watch run --project src/PromptTemplateManager.Api/PromptTemplateManager.Api.csproj
+  #   restart: unless-stopped
+
+  # frontend-dev:
+  #   image: node:18-alpine
+  #   container_name: proomptz-frontend-dev
+  #   working_dir: /app
+  #   volumes:
+  #     - ./frontend:/app
+  #     - ./shared:/shared
+  #     - /app/node_modules
+  #   ports:
+  #     - "5173:5173"
+  #   environment:
+  #     - NODE_ENV=development
+  #   command: sh -c "npm install && npm run dev -- --host"
+  #   restart: unless-stopped
+
+volumes:
+  data:
+    driver: local
