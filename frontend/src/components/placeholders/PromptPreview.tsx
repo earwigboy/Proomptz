@@ -17,7 +17,7 @@ export default function PromptPreview({
   const generatedPrompt = generatePrompt(templateContent, placeholderValues);
 
   return (
-    <div className={`prompt-preview flex flex-col ${className}`}>
+    <div className={`prompt-preview flex flex-col w-full ${className}`}>
       <div className="flex items-center justify-between mb-2">
         <h3 id="prompt-preview-heading">Preview</h3>
         {/* T040: Edited badge when hasEdits is true */}

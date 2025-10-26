@@ -30,7 +30,7 @@ export default function TemplateEditor({
   className = '',
 }: TemplateEditorProps) {
   return (
-    <div className={`flex flex-col space-y-4 ${className}`}>
+    <div className={`flex flex-col space-y-4 w-full ${className}`}>
       {/* Header with Reset button (T024: only shown when hasEdits is true) */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Edit Template Content</h3>

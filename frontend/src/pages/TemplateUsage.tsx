@@ -70,7 +70,7 @@ export default function TemplateUsage() {
   }
 
   return (
-    <div className="h-full flex flex-col" style={{ padding: '2rem', paddingLeft: '3rem', paddingRight: '3rem' }}>
+    <div className="h-full w-full flex flex-col" style={{ padding: '2rem' }}>
       <div className="flex-shrink-0" style={{ marginBottom: '2rem' }}>
         <button
           onClick={() => {
@@ -110,8 +110,8 @@ export default function TemplateUsage() {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '400px 1fr',
-        gap: '3rem',
+        gridTemplateColumns: '220px 1fr',
+        gap: '1rem',
         minHeight: 0,
         width: '100%',
         overflow: 'hidden'
@@ -133,10 +133,8 @@ export default function TemplateUsage() {
         </div>
 
         {/* T041 & T043: Tabs section with flex-1 (takes remaining space) and flex flex-col */}
-        <div className="flex flex-col" style={{
+        <div className="flex flex-col w-full" style={{
           minWidth: 0,
-          maxWidth: '100%',
-          width: '100%',
           minHeight: 0,
           overflow: 'hidden'
         }}>
@@ -144,7 +142,7 @@ export default function TemplateUsage() {
           <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as 'preview' | 'edit')}
-            className="flex-1 flex flex-col"
+            className="flex-1 flex flex-col w-full"
           >
             <TabsList className="mb-4 flex-shrink-0">
               <TabsTrigger value="preview">Preview</TabsTrigger>
