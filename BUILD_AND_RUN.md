@@ -5,6 +5,20 @@
 - .NET 8 SDK
 - Node.js 18+ and npm
 
+## Environment Setup
+
+Before running the application, copy the environment example files:
+
+```bash
+# Copy root .env.example (for Docker configuration)
+cp .env.example .env
+
+# Copy frontend .env.example (for development API configuration)
+cp frontend/.env.example frontend/.env
+```
+
+These files configure the API port to **5026** for both local development and Docker deployment.
+
 ## Backend Setup
 
 ```bash
@@ -13,12 +27,25 @@ cd backend
 # Build the solution
 dotnet build
 
-# Run the API (will create SQLite database automatically)
-dotnet run --project src/PromptTemplateManager.Api
+# Option 1: Run using the helper script (recommended)
+./dev-run.sh
+
+# Option 2: Run on a custom port
+./dev-run.sh 8080
+
+# Option 3: Run manually with environment variable
+ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/PromptTemplateManager.Api
 
 # API will be available at: http://localhost:5026
 # Swagger UI at: http://localhost:5026/swagger
 ```
+
+**Note:** The `ASPNETCORE_ENVIRONMENT=Development` environment variable is required to:
+- Use the correct configuration from `appsettings.Development.json`
+- Enable Swagger UI
+- Use development-specific settings (like local data paths)
+
+The `dev-run.sh` script automatically sets this for you.
 
 ## Frontend Setup
 
@@ -42,10 +69,10 @@ npm run dev
 
 ## Quick Test
 
-1. Start backend: `cd backend && dotnet run --project src/PromptTemplateManager.Api`
+1. Start backend: `cd backend && ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/PromptTemplateManager.Api`
 2. Start frontend: `cd frontend && npm run dev`
 3. Open browser to http://localhost:5173
-4. Use Swagger at http://localhost:5000/swagger to test API directly
+4. Use Swagger at http://localhost:5026/swagger to test API directly
 
 ## MVP Features Available
 

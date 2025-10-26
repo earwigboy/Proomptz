@@ -490,8 +490,34 @@ public class FileSystemTemplateRepository : ITemplateRepository, IDisposable
 
     private Guid? ExtractFolderIdFromPath(string? folderPath)
     {
-        // For now, return null - folder hierarchy will be handled by FolderRepository
-        return null;
+        // If path is null, empty, or equals the root storage path, template is in root
+        if (string.IsNullOrEmpty(folderPath) || folderPath == _storagePath)
+        {
+            return null;
+        }
+
+        // Look for .folder-meta file in the directory
+        var metaPath = Path.Combine(folderPath, ".folder-meta");
+        if (!File.Exists(metaPath))
+        {
+            return null;
+        }
+
+        try
+        {
+            var yaml = File.ReadAllText(metaPath);
+            var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
+                .WithNamingConvention(YamlDotNet.Serialization.NamingConventions.CamelCaseNamingConvention.Instance)
+                .Build();
+            var metadata = deserializer.Deserialize<FolderMetadata>(yaml);
+
+            return metadata.Id;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to read folder metadata from {MetaPath}", metaPath);
+            return null;
+        }
     }
 
     private void CacheTemplate(Template template)

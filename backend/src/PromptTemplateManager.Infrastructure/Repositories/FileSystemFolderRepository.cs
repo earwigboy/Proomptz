@@ -372,6 +372,10 @@ public class FileSystemFolderRepository : IFolderRepository
                     var metadata = _yamlDeserializer.Deserialize<FolderMetadata>(yaml);
 
                     var folderName = Path.GetFileName(subDirectory);
+
+                    // Count template files (.md) in this folder (not recursive)
+                    var templateCount = Directory.GetFiles(subDirectory, "*.md", SearchOption.TopDirectoryOnly).Length;
+
                     var folder = new Folder
                     {
                         Id = metadata.Id,
@@ -380,7 +384,7 @@ public class FileSystemFolderRepository : IFolderRepository
                         CreatedAt = metadata.Created,
                         UpdatedAt = metadata.Updated,
                         ChildFolders = new List<Folder>(),
-                        Templates = new List<Template>()
+                        Templates = CreatePlaceholderTemplates(templateCount)
                     };
 
                     folders.Add(folder);
@@ -421,5 +425,19 @@ public class FileSystemFolderRepository : IFolderRepository
 
         var parentPath = GetFolderPath(parent);
         return Path.Combine(parentPath, sanitizedName);
+    }
+
+    /// <summary>
+    /// Creates a list of placeholder templates to represent the count.
+    /// Used for efficiently populating the Templates collection for counting purposes.
+    /// </summary>
+    private List<Template> CreatePlaceholderTemplates(int count)
+    {
+        var templates = new List<Template>(count);
+        for (int i = 0; i < count; i++)
+        {
+            templates.Add(new Template());
+        }
+        return templates;
     }
 }

@@ -64,16 +64,16 @@ COPY --from=backend-build /app/publish .
 COPY --from=frontend-build /frontend/dist ./wwwroot
 
 # Set environment variables
-ENV ASPNETCORE_URLS=http://+:5026
+ENV PORT=5026
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ConnectionStrings__DefaultConnection="Data Source=/app/data/prompttemplates.db"
 
-# Expose port
-EXPOSE 5026
+# Expose port (can be overridden via --env PORT=xxxx)
+EXPOSE ${PORT}
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:5026/health || exit 1
+    CMD curl -f http://localhost:${PORT}/health || exit 1
 
 # Run as non-root user for security
 RUN addgroup -g 1000 appuser && \

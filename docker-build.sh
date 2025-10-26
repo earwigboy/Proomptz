@@ -105,7 +105,10 @@ if $CONTAINER_CMD build $BUILD_ARGS $PLATFORM -t $IMAGE_NAME:$TAG .; then
     $CONTAINER_CMD images $IMAGE_NAME:$TAG
     echo ""
     print_info "To run the container:"
-    echo "  $CONTAINER_CMD run -d -p 5026:5026 -v \$(pwd)/data:/app/data $IMAGE_NAME:$TAG"
+    echo "  $CONTAINER_CMD run -d -p 5026:5026 -e PORT=5026 -v \$(pwd)/data:/app/data $IMAGE_NAME:$TAG"
+    echo ""
+    print_info "To run on a different port (e.g., 8080):"
+    echo "  $CONTAINER_CMD run -d -p 8080:8080 -e PORT=8080 -v \$(pwd)/data:/app/data $IMAGE_NAME:$TAG"
     echo ""
     print_info "Or use compose:"
     if [ "$CONTAINER_CMD" = "podman" ]; then

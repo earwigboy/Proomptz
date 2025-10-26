@@ -95,3 +95,6 @@ TestResults/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Proompz App
+data/

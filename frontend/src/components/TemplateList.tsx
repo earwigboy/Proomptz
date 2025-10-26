@@ -85,7 +85,10 @@ export default function TemplateList({ onEdit, onCreate, selectedFolderId }: Tem
   const deleteMutation = useMutation({
     mutationFn: (id: string) => templatesApi.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({
+        queryKey: ['templates'],
+        refetchType: 'active'
+      });
       queryClient.invalidateQueries({ queryKey: ['folders'] });
       toast.success('Template deleted successfully');
     },

@@ -15,18 +15,19 @@ services:
       dockerfile: Dockerfile
     container_name: proomptz-app
     ports:
-      - "5026:5026"
+      - "${PORT:-5026}:${PORT:-5026}"
     volumes:
       # Persist SQLite database
       # Note: For Podman on Fedora/RHEL with SELinux, the :Z flag enables proper labeling
       # - ./data:/app/data${SELINUX_FLAG:-}
       - ./data:/app/data:Z
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - PORT=${PORT:-5026}
+      - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/prompttemplates.db
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5026/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-5026}/health"]
       interval: 30s
       timeout: 3s
       retries: 3
@@ -43,11 +44,11 @@ services:
   #     - ./backend:/app
   #     - ./data:/app/data
   #   ports:
-  #     - "5026:5026"
+  #     - "${PORT:-5026}:${PORT:-5026}"
   #   environment:
+  #     - PORT=${PORT:-5026}
   #     - ASPNETCORE_ENVIRONMENT=Development
   #     - ConnectionStrings__DefaultConnection=Data Source=/app/data/prompttemplates.db
-  #     - ASPNETCORE_URLS=http://+:5026
   #   command: dotnet watch run --project src/PromptTemplateManager.Api/PromptTemplateManager.Api.csproj
   #   restart: unless-stopped
 

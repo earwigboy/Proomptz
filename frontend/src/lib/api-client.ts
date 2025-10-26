@@ -15,10 +15,11 @@ import { FoldersService } from './api/services/FoldersService';
 
 // Configure the API base URL
 // In production (containerized), the API is served from the same origin
-// In development, the API runs on a separate port (5026)
+// In development, the API runs on a separate port (default: 5026, configurable via VITE_API_PORT)
+const API_PORT = import.meta.env.VITE_API_PORT || '5026';
 OpenAPI.BASE = import.meta.env.DEV
-  ? 'http://localhost:5026'  // Development: Vite dev server -> separate backend
-  : window.location.origin;   // Production: Same origin (backend serves frontend)
+  ? `http://localhost:${API_PORT}`  // Development: Vite dev server -> separate backend
+  : window.location.origin;          // Production: Same origin (backend serves frontend)
 
 // Re-export all types from the generated API
 export type {

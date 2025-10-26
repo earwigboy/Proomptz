@@ -405,9 +405,38 @@ The following environment variables can be configured:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
+| `PORT` | `5026` | Port the backend API server listens on |
 | `ASPNETCORE_ENVIRONMENT` | `Production` | ASP.NET Core environment (Development/Staging/Production) |
-| `ASPNETCORE_URLS` | `http://+:5026` | URLs the server listens on |
 | `ConnectionStrings__DefaultConnection` | `Data Source=/app/data/prompttemplates.db` | SQLite database connection string |
+
+**Note**: The `PORT` environment variable takes precedence over `ASPNETCORE_URLS` if both are set. For most use cases, simply set `PORT` to configure the listening port.
+
+#### Port Configuration Examples
+
+**Run on default port (5026):**
+```bash
+docker run -d -p 5026:5026 proomptz:latest
+```
+
+**Run on a different port (8080):**
+```bash
+docker run -d -p 8080:8080 -e PORT=8080 proomptz:latest
+```
+
+**Using docker-compose with custom port:**
+```bash
+# Set PORT in environment and run
+PORT=8080 docker-compose up -d
+```
+
+**Using .env file:**
+```bash
+# Create .env file
+echo "PORT=8080" > .env
+
+# Run docker-compose (it automatically reads .env)
+docker-compose up -d
+```
 
 ### Custom Configuration File
 

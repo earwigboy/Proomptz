@@ -51,7 +51,10 @@ export default function TemplateForm({ template, selectedFolderId, onClose }: Te
   const createMutation = useMutation({
     mutationFn: (data: CreateTemplateRequest) => templatesApi.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({
+        queryKey: ['templates'],
+        refetchType: 'active'
+      });
       queryClient.invalidateQueries({ queryKey: ['folders'] });
       toast.success('Template created successfully');
       onClose();
@@ -67,7 +70,10 @@ export default function TemplateForm({ template, selectedFolderId, onClose }: Te
     mutationFn: ({ id, data }: { id: string; data: UpdateTemplateRequest }) =>
       templatesApi.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({
+        queryKey: ['templates'],
+        refetchType: 'active'
+      });
       queryClient.invalidateQueries({ queryKey: ['folders'] });
       toast.success('Template updated successfully');
       onClose();

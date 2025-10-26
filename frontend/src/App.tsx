@@ -66,7 +66,11 @@ function HomePage() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      // Invalidate all template queries regardless of folderId
+      queryClient.invalidateQueries({
+        queryKey: ['templates'],
+        refetchType: 'active'
+      });
       queryClient.invalidateQueries({ queryKey: ['folders'] });
       toast.success('Template moved successfully');
     },

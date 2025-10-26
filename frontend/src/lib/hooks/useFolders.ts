@@ -16,7 +16,10 @@ export function useFolders() {
     mutationFn: (request: CreateFolderRequest) => foldersApi.create(request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['folders'] });
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({
+        queryKey: ['templates'],
+        refetchType: 'active'
+      });
     },
   });
 
@@ -26,7 +29,10 @@ export function useFolders() {
       foldersApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['folders'] });
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({
+        queryKey: ['templates'],
+        refetchType: 'active'
+      });
     },
   });
 
@@ -35,7 +41,10 @@ export function useFolders() {
     mutationFn: (id: string) => foldersApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['folders'] });
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({
+        queryKey: ['templates'],
+        refetchType: 'active'
+      });
     },
   });
 
