@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using PromptTemplateManager.Api.Middleware;
 using PromptTemplateManager.Application.Services;
 using PromptTemplateManager.Application.Validators;
@@ -8,6 +9,9 @@ using PromptTemplateManager.Infrastructure.Data;
 using PromptTemplateManager.Infrastructure.DevinIntegration;
 using PromptTemplateManager.Infrastructure.Repositories;
 using PromptTemplateManager.Infrastructure.FileSystem;
+
+// Load .env file into environment variables (overrides appsettings.json)
+DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,11 +83,23 @@ builder.Services.AddSingleton<IFolderRepository>(sp =>
     return new FileSystemFolderRepository(templateStoragePath, logger);
 });
 
+// Configure Devin API options
+builder.Services.Configure<DevinApiOptions>(
+    builder.Configuration.GetSection(DevinApiOptions.SectionName));
+
+// Register HttpClient for DevinClient with IHttpClientFactory
+builder.Services.AddHttpClient<IDevinClient, DevinClient>((serviceProvider, client) =>
+{
+    var options = serviceProvider.GetRequiredService<IOptions<DevinApiOptions>>().Value;
+    client.BaseAddress = new Uri(options.BaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
 // Register services
 builder.Services.AddScoped<ITemplateService, TemplateService>();
 builder.Services.AddScoped<IFolderService, FolderService>();
 builder.Services.AddScoped<IPlaceholderService, PlaceholderService>();
-builder.Services.AddScoped<IDevinClient, DevinClient>();
 
 // Register validators
 builder.Services.AddValidatorsFromAssemblyContaining<CreateTemplateRequestValidator>();

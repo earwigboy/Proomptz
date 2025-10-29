@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using PromptTemplateManager.Application.DTOs;
 using PromptTemplateManager.Core.Interfaces;
+using PromptTemplateManager.Core.Exceptions;
 using System.Text.RegularExpressions;
 
 namespace PromptTemplateManager.Api.Controllers;
@@ -248,17 +249,34 @@ public class TemplatesController : ControllerBase
             });
         }
 
-        var generatedPrompt = _placeholderService.GeneratePrompt(template.Content ?? string.Empty, request.PlaceholderValues);
-        var (success, message, responseId) = await _devinClient.SendPromptAsync(generatedPrompt, cancellationToken);
-
-        var response = new SendPromptResponse
+        try
         {
-            Success = success,
-            Message = message,
-            DevinResponseId = responseId
-        };
+            var generatedPrompt = _placeholderService.GeneratePrompt(template.Content ?? string.Empty, request.PlaceholderValues);
+            var (success, message, responseId, sessionUrl) = await _devinClient.SendPromptAsync(generatedPrompt, cancellationToken);
 
-        return Ok(response);
+            var response = new SendPromptResponse
+            {
+                Success = success,
+                Message = message,
+                DevinResponseId = responseId,
+                SessionUrl = sessionUrl
+            };
+
+            return Ok(response);
+        }
+        catch (DevinApiException ex)
+        {
+            // Return user-friendly error without failing the HTTP request
+            var errorResponse = new SendPromptResponse
+            {
+                Success = false,
+                Message = ex.UserFriendlyMessage,
+                DevinResponseId = null,
+                SessionUrl = null
+            };
+
+            return Ok(errorResponse);
+        }
     }
 
     private static int CountPlaceholders(string content)

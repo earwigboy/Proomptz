@@ -45,6 +45,8 @@ export default function TemplateUsage() {
     resetEdits,
   } = useTemplateEditor(template?.content || '', placeholderValues);
 
+  const [sessionUrl, setSessionUrl] = useState<string | null>(null);
+
   const sendMutation = useMutation({
     mutationFn: () =>
       TemplatesService.postApiTemplatesSend({
@@ -52,12 +54,20 @@ export default function TemplateUsage() {
         requestBody: { placeholderValues },
       }),
     onSuccess: (response) => {
-      setSuccess(response.message || 'Prompt sent successfully!');
-      setError(null);
+      if (response.success && response.sessionUrl) {
+        setSuccess(response.message || 'Prompt sent successfully!');
+        setSessionUrl(response.sessionUrl);
+        setError(null);
+      } else {
+        setError(response.message || 'Failed to send prompt');
+        setSuccess(null);
+        setSessionUrl(null);
+      }
     },
     onError: (err: any) => {
       setError(err.response?.data?.message || 'Failed to send prompt');
       setSuccess(null);
+      setSessionUrl(null);
     },
   });
 
@@ -104,7 +114,23 @@ export default function TemplateUsage() {
           role="status"
           aria-live="polite"
         >
-          {success}
+          <div>{success}</div>
+          {sessionUrl && (
+            <div style={{ marginTop: '0.5rem' }}>
+              <a
+                href={sessionUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: '#10b981',
+                  textDecoration: 'underline',
+                  fontWeight: 600,
+                }}
+              >
+                Open Devin Session →
+              </a>
+            </div>
+          )}
         </div>
       )}
 

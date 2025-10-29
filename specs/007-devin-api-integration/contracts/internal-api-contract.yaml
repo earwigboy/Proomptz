@@ -1,0 +1,186 @@
+openapi: 3.0.3
+info:
+  title: Proomptz Devin Integration API
+  description: API contract for sending templates to Devin AI
+  version: 1.0.0
+  contact:
+    name: Proomptz Development Team
+
+servers:
+  - url: http://localhost:5026/api
+    description: Development server
+  - url: https://api.proomptz.example.com/api
+    description: Production server (placeholder)
+
+paths:
+  /templates/{id}/send:
+    post:
+      tags:
+        - Templates
+      summary: Send template to Devin AI
+      description: |
+        Generates a prompt from the specified template with provided placeholder values
+        and sends it to Devin AI to create a new session. Returns a clickable link to
+        view the session in the browser.
+      operationId: sendTemplateToDevin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the template to send
+          schema:
+            type: string
+            format: uuid
+            example: "abc-123-def-456"
+      requestBody:
+        required: true
+        description: Placeholder values to generate the prompt
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneratePromptRequest'
+            example:
+              placeholderValues:
+                project_name: "My Web App"
+                technology: "React"
+                description: "A modern web application"
+      responses:
+        '200':
+          description: Template sent successfully or error occurred (check success field)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendPromptResponse'
+              examples:
+                success:
+                  summary: Successful session creation
+                  value:
+                    success: true
+                    message: "Template sent to Devin successfully"
+                    devinResponseId: "devin_session_abc123xyz"
+                    sessionUrl: "https://devin.ai/sessions/devin_session_abc123xyz"
+                error_invalid_key:
+                  summary: Invalid API key
+                  value:
+                    success: false
+                    message: "Devin API key is invalid or missing. Please check your configuration."
+                    devinResponseId: null
+                    sessionUrl: null
+                error_rate_limit:
+                  summary: Rate limit exceeded
+                  value:
+                    success: false
+                    message: "Devin API rate limit exceeded. Please try again in a few minutes."
+                    devinResponseId: null
+                    sessionUrl: null
+                error_timeout:
+                  summary: Request timeout
+                  value:
+                    success: false
+                    message: "Request to Devin API timed out. Please check your connection and try again."
+                    devinResponseId: null
+                    sessionUrl: null
+        '400':
+          description: Bad request - invalid template ID or placeholder values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '404':
+          description: Template not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+              example:
+                type: "https://tools.ietf.org/html/rfc7231#section-6.5.4"
+                title: "Not Found"
+                status: 404
+                detail: "Template with ID 'abc-123' not found"
+
+components:
+  schemas:
+    GeneratePromptRequest:
+      type: object
+      description: Request to generate a prompt with placeholder values
+      required:
+        - placeholderValues
+      properties:
+        placeholderValues:
+          type: object
+          description: Key-value pairs for template placeholders
+          additionalProperties:
+            type: string
+          example:
+            project_name: "My Web App"
+            technology: "React"
+            description: "A modern web application"
+
+    SendPromptResponse:
+      type: object
+      description: Response from sending a template to Devin
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: Whether the Devin session was created successfully
+          example: true
+        message:
+          type: string
+          description: User-friendly status or error message
+          example: "Template sent to Devin successfully"
+        devinResponseId:
+          type: string
+          nullable: true
+          description: Unique session ID from Devin (null if error)
+          example: "devin_session_abc123xyz"
+        sessionUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: Full HTTPS URL to view the Devin session (null if error)
+          example: "https://devin.ai/sessions/devin_session_abc123xyz"
+
+    ProblemDetails:
+      type: object
+      description: RFC 7807 Problem Details for HTTP APIs
+      properties:
+        type:
+          type: string
+          format: uri
+          description: URI reference identifying the problem type
+        title:
+          type: string
+          description: Short, human-readable summary of the problem
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence
+        instance:
+          type: string
+          format: uri
+          description: URI reference identifying the specific occurrence
+
+    ValidationProblemDetails:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          properties:
+            errors:
+              type: object
+              description: Validation errors keyed by field name
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+
+  securitySchemes: {}
+
+tags:
+  - name: Templates
+    description: Template management and Devin integration operations

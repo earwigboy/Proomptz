@@ -1,0 +1,145 @@
+openapi: 3.0.3
+info:
+  title: Devin API Integration Contract
+  description: |
+    External API contract for Devin AI session creation.
+    This specification documents the expected Devin API behavior based on
+    the documentation reference at https://docs.devin.ai/api-reference/.
+
+    **Note**: This is our understanding of the Devin API contract and may need
+    adjustments during implementation when testing against the real API.
+  version: 1.0.0
+
+servers:
+  - url: https://api.devin.ai
+    description: Devin API production server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /v1/sessions:
+    post:
+      tags:
+        - Sessions
+      summary: Create a new Devin session
+      description: |
+        Creates a new work session in Devin AI with the provided prompt.
+        Returns the session ID and URL for viewing in the browser.
+      operationId: createSession
+      requestBody:
+        required: true
+        description: Session creation request with prompt
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSessionRequest'
+            example:
+              prompt: |
+                Create a REST API endpoint for user authentication using JWT tokens.
+
+                Requirements:
+                - POST /api/auth/login endpoint
+                - Accept email and password
+                - Return JWT token on success
+                - Use bcrypt for password hashing
+              idempotent: "true"
+                
+      responses:
+        '200':
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSessionResponse'
+              example:
+                session_id: "devin_session_abc123xyz"
+                url: "https://devin.ai/sessions/devin_session_abc123xyz"
+                is_new_session: "true"
+        '400':
+          description: Bad request - invalid prompt or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevinErrorResponse'
+              example:
+                error:
+                  detail: "Invalid input response"
+        '401':
+          description: Unauthorized - invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevinErrorResponse'
+              example:
+                error:
+                  detail: "Invalid input response"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevinErrorResponse'
+              example:
+                error:
+                  detail: "Invalid input response"
+components:
+  schemas:
+    CreateSessionRequest:
+      type: object
+      description: Request to create a new Devin session
+      required:
+        - prompt
+      properties:
+        prompt:
+          type: string
+          description: The prompt text describing the task for Devin
+          minLength: 1
+          maxLength: 100000
+          example: "Create a REST API endpoint for user authentication..."
+        idempotent:
+          type: bool
+          description: Enable idempotent session creation
+
+    CreateSessionResponse:
+      type: object
+      description: Successful session creation response
+      required:
+        - session_id
+        - url
+      properties:
+        session_id:
+          type: string
+          description: Unique identifier for the created session
+          example: "devin_session_abc123xyz"
+        url:
+          type: string
+          format: uri
+          description: Full HTTPS URL to view the session in browser
+          example: "https://devin.ai/sessions/devin_session_abc123xyz"
+        is_new_session:
+          type: bool
+          description: Indicates if a new session was created (only present if idempotent=true)
+          example: "true"
+
+    DevinErrorResponse:
+      type: object
+      description: Error response from Devin API
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: |
+        Devin API key passed as Bearer token in Authorization header.
+        Example: `Authorization: Bearer YOUR_API_KEY_HERE`
+
+tags:
+  - name: Sessions
+    description: Devin session creation and management operations
